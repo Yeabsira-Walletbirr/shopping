@@ -1,0 +1,66 @@
+import { Box, Card, CardContent, CardMedia, Chip, Stack, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import StraightenIcon from '@mui/icons-material/Straighten';
+type PlaceItem = {
+    id: number,
+    name: string,
+    address: string,
+    placeType: string,
+    description: string,
+    photo: string,
+    latitude: number,
+    longitude: number,
+    productTypes: any,
+    photoDataUrl: any
+};
+const Place = (placeItem: PlaceItem) => {
+    const router = useRouter()
+    return (
+           <Card
+            sx={{
+                display: 'flex',
+                alignItems: 'center',
+                borderRadius: 4,
+                minWidth: 300,
+                // maxWidth: 320,
+                my: 2,
+                flexShrink: 0,
+                boxShadow:4
+            }}
+            onClick={() => router.push(`/place/${placeItem.id}`)}
+        >
+            <CardMedia
+                component="img"
+                image={placeItem?.photoDataUrl}
+                alt={placeItem.name}
+                sx={{
+                    width: 'auto',
+                    height: 130,
+                    objectFit: 'contain',
+                    borderRadius: 2,
+                    mr: 2,
+                }}
+            />
+            <Box>
+                <Typography fontWeight="bold">{placeItem.name}</Typography>
+
+                <Stack direction="row" spacing={1} mb={1}>
+                    <Stack direction="row" spacing={0.5} alignItems="center">
+                        <StraightenIcon sx={{ fontSize: 14 }} />
+                        <Typography fontSize={11}>100M</Typography>
+                    </Stack>
+                    <Stack direction="row" spacing={0.5} alignItems="center">
+                        <AccessTimeIcon sx={{ fontSize: 14 }} />
+                        <Typography fontSize={11}>20 minuites</Typography>
+                    </Stack>
+                </Stack>
+
+                <Typography fontWeight="bold" fontSize={13}>
+                    4.0
+                </Typography>
+            </Box>
+        </Card>
+    )
+}
+export default Place;

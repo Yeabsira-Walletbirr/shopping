@@ -1,0 +1,263 @@
+'use client';
+
+import {
+    Box,
+    Typography,
+    Tabs,
+    Tab,
+    Divider,
+} from '@mui/material';
+import { homeData } from '@/data/home'
+import { useEffect, useRef, useState } from 'react';
+import TrendingProduct from './TrendingProduct';
+import Place from './Place';
+import Product from './Product';
+import API from '@/api'
+
+const categories = [
+    { name: 'Food', value: "FOOD" },
+    { name: 'Grocery', value: 'GROCERY' },
+    { name: 'Fashion', value: 'FASHION' },
+    { name: 'Electroics', value: 'ELECTRONICS' },
+    { name: 'Home Appliances & Furniture', value: 'HOME_APPLIANCES_AND_FURNITURE' },
+    { name: 'Vehicle', value: 'VEHICLE' },
+    { name: 'House', value: 'HOUSE' },
+    { name: 'Other', value: 'OTHER' }
+];
+
+export default function HeroSection() {
+    const [tabIndex, setTabIndex] = useState(0);
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const scrollRef1 = useRef<HTMLDivElement>(null);
+    const scrollRef2 = useRef<HTMLDivElement>(null);
+
+    const api = API();
+
+    const [products, setProducts] = useState([]);
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
+
+    const [trendingProducts, setTrendingProducts] = useState([]);
+    const [pageTrending, setPageTrending] = useState(0);
+    const [totalTrendingPages, setTotalTrendingPages] = useState(1);
+
+    const [type, setType] = useState('FOOD');
+
+
+    const data = homeData;
+
+    const getPhoto = async (res: any) => {
+        return await Promise.all(
+            res?.content?.map(async (p: any) => {
+                if (p.photo) {
+                    try {
+                        const res = await api.get(`/files/view/${p.photo}`, null, {
+                            responseType: 'blob',
+                        });
+                        const imageObjectURL = URL.createObjectURL(res);
+                        return { ...p, photoDataUrl: imageObjectURL };
+                    } catch (err) {
+                        console.error('Photo load error:', err);
+                        return { ...p, photoDataUrl: null };
+                    }
+                }
+                return { ...p, photoDataUrl: null };
+            })
+        );
+    };
+
+    const fetchProducts = async (pageNumber = 0, append = false) => {
+        try {
+            const res = await api.get('/product', {
+                page: pageNumber,
+                size: 10,
+                productType: type
+            });
+            const newProducts = await getPhoto(res);
+            setProducts(prev =>
+                append ? [...prev, ...newProducts] : newProducts
+            );
+            setTotalPages(res.totalPages || 1);
+            setPage(res.number || 0);
+        } catch (err) {
+            console.error("Failed to load products");
+        }
+    };
+
+    const fetchTrending = async (pageNumber = 0, append = false) => {
+        try {
+            const res2 = await api.get('/product/trending', {
+                page: pageNumber,
+                size: 10,
+                productType: type
+            });
+            const newTrending = await getPhoto(res2);
+            setTrendingProducts(prev =>
+                append ? [...prev, ...newTrending] : newTrending
+            );
+            setTotalTrendingPages(res2.totalPages || 1);
+            setPageTrending(res2.number || 0);
+        } catch (err) {
+            console.error("Failed to load trending products");
+        }
+    };
+
+
+    const [places, setPlaces] = useState([]);
+    const [pagePlaces, setPagePlaces] = useState(0);
+    const [totalPlacesPages, setTotalPlacesPages] = useState(1);
+
+    const fetchPlaces = async (pageNumber = 0, append = false) => {
+        try {
+            // const jsonUser = localStorage.getItem('user');
+            // if (!jsonUser) return;
+
+            const data = await api.get(`/place/byProductType`, {
+                page: pageNumber,
+                size: 10,
+                productType: type
+            });
+
+            const placesWithPhotos = await Promise.all(
+                data?.content?.map(async (place) => {
+                    if (place.photo) {
+                        try {
+                            const res = await api.get(`/files/view/${place.photo}`, null, {
+                                responseType: 'blob',
+                            });
+                            const imageObjectURL = URL.createObjectURL(res);
+
+
+                            return { ...place, photoDataUrl: imageObjectURL };
+                        } catch (err) {
+                            console.error('Photo load error:', err);
+                            return { ...place, photoDataUrl: null };
+                        }
+                    }
+                    return { ...place, photoDataUrl: null };
+                })
+            );
+
+            setPlaces(prev =>
+                append ? [...prev, ...placesWithPhotos] : placesWithPhotos
+            );
+            setTotalPlacesPages(data.totalPages || 1);
+            setPagePlaces(data.number || 0);
+        } catch (e) {
+            console.error('Error fetching places:', e);
+        } finally {
+        }
+    };
+
+    const handleScroll = async () => {
+        if (!scrollRef.current) return;
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+        if (scrollLeft + clientWidth >= scrollWidth - 20 && page + 1 < totalPages) {
+            await fetchProducts(page + 1, true);
+        }
+    };
+
+    const handleScrollTrending = () => {
+        if (!scrollRef1.current) return;
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef1.current;
+        if (scrollLeft + clientWidth >= scrollWidth - 20 && pageTrending + 1 < totalTrendingPages) {
+            fetchTrending(pageTrending + 1, true);
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts();
+        fetchTrending();
+        fetchPlaces()
+    }, [type]);
+
+    return (
+
+        <Box>
+            
+            <Box
+  sx={{
+    position: 'sticky',
+    top: 0,
+    zIndex: 10,
+    backgroundColor: 'background.paper',
+    borderBottom: 1,
+    borderColor: 'divider',
+  }}
+>
+  <Tabs
+    value={tabIndex}
+    onChange={(_, newVal) => {
+      scrollRef.current?.scrollTo({ left: 0, behavior: 'smooth' });
+      scrollRef1.current?.scrollTo({ left: 0, behavior: 'smooth' });
+      scrollRef2.current?.scrollTo({ left: 0, behavior: 'smooth' });
+      setTabIndex(newVal);
+      setType(categories[newVal]?.value);
+    }}
+    variant="scrollable"
+    scrollButtons="auto"
+  >
+    {categories.map((cat) => (
+      <Tab key={cat.value} label={cat.name} sx={{ textTransform: 'none' }} />
+    ))}
+  </Tabs>
+</Box>
+
+            {
+                (products?.length > 0 || trendingProducts?.length > 0 || places?.length > 0) ?
+                    <>
+                        <Box sx={{ px: 1 }}>
+                            <Box
+                                ref={scrollRef}
+                                sx={{ display: 'flex', overflowX: 'auto', pb: 1, scrollbarWidth: 'none' }}
+                                onScroll={handleScroll}
+                            >
+                                {products?.map(p => (
+                                    <Box key={p.id}><Product {...p} /></Box>
+                                ))}
+                            </Box>
+                        </Box>
+                        {trendingProducts?.length > 0 &&
+                            <>
+                                <Divider sx={{ my: 2 }} />
+                                <Box sx={{ px: 1 }}>
+                                    <Typography variant="h6" fontWeight="bold" mt={4} mb={2}>
+                                        Trending Items
+                                    </Typography>
+                                    <Box
+                                        ref={scrollRef1}
+                                        sx={{ display: 'flex', overflowX: 'auto', pb: 2, scrollbarWidth: 'none' }}
+                                        onScroll={handleScrollTrending}
+                                    >
+                                        {trendingProducts?.map(p => (
+                                            <Box sx={{ padding: 1 }} key={p.id}><TrendingProduct {...p} /></Box>
+                                        ))}
+                                    </Box>
+                                </Box>
+                            </>
+                        }
+
+                        {places?.length > 0 &&
+                            <>
+                                <Divider sx={{ my: 2 }} />
+                                <Box sx={{ px: 1 }}>
+                                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                        Nearby Places
+                                    </Typography>
+                                    {places?.map(p => (
+                                        // console.log(p)
+                                        <Box sx={{ p: 1 }} key={p.id}><Place {...p} /></Box>
+                                    ))}
+                                </Box>
+                            </>
+                        }
+
+                    </>
+                    :
+                    <Typography height={'82vh'} sx={{alignContent:'center', justifySelf:'center'}}>
+                        No content available
+                    </Typography>
+            }
+        </Box>
+    );
+}
