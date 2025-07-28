@@ -6,10 +6,11 @@ import { useSearchParams } from 'next/navigation';
 const PriceSummaryPage = () => {
   const searchParams = useSearchParams();
   const id = Number(searchParams.get('id'));
+  const placeId = Number(searchParams.get('placeId'));
   const quantity = Number(searchParams.get('quantity'));
 
   return (<ProtectedRoute>
-    <PriceSummary id={id} quantity={quantity} />;
+    <PriceSummary id={id} quantity={quantity} placeId={placeId}/>;
   </ProtectedRoute>)
 
 };

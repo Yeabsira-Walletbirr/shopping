@@ -123,10 +123,15 @@ const ViewProducts = ({ params }) => {
                                                     <Typography variant="h5" gutterBottom>
                                                         {product.title}
                                                     </Typography>
-
-                                                    <Typography sx={{ borderRadius: 2, backgroundColor: statusColors[product.status], color: 'white', p: 1 }} fontWeight={700} gutterBottom>
+<Box sx={{display:'flex'}}>
+    <Typography sx={{ borderRadius: 2, backgroundColor: statusColors[product.status], color: 'white', p: 1 }} fontWeight={700} gutterBottom>
                                                         {product.status}
                                                     </Typography>
+                                                    {product?.outOfStock && <Typography sx={{ borderRadius: 2, backgroundColor: 'red', color: 'white', p: 1 }} fontWeight={700} gutterBottom>
+                                                        Out of stock
+                                                    </Typography>}
+</Box>
+                                                    
                                                 </Box>
                                                 <Typography variant="body2" color="text.secondary">
                                                     {product.description}

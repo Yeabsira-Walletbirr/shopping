@@ -39,6 +39,7 @@ export default function EditProductForm({ params }) {
     const [loading, setLoading] = useState(true);
     const router = useRouter()
     const [images, setImages] = useState([]);
+    const [quantity, setQuantity] = useState()
 
 
     useEffect(() => {
@@ -51,6 +52,8 @@ export default function EditProductForm({ params }) {
                 setType(res.type || "");
                 setPrice(res.price || 0);
                 setPhoto(res.photo || "");
+                if (res?.quantity)
+                    setQuantity(res.quantity);
             } catch (error) {
                 console.error("Failed to load product", error);
             } finally {
@@ -68,7 +71,8 @@ export default function EditProductForm({ params }) {
             productType: type,
             price,
             photo,
-            images
+            images,
+            quantity
         };
 
         try {
@@ -135,6 +139,14 @@ export default function EditProductForm({ params }) {
                                 type="number"
                                 value={price}
                                 onChange={(e) => setPrice(parseFloat(e.target.value))}
+                            />
+                            <TextField
+                                label="Quantity"
+                                fullWidth
+                                type="number"
+                                rows={4}
+                                value={quantity}
+                                onChange={(e) => setQuantity(e.target.value && parseInt(e.target.value))}
                             />
 
                             <FileUpload label={"Replace Photo"} onUploadSuccess={onUploadSuccess} />

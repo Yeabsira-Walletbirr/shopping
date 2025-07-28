@@ -32,6 +32,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ProtectedRoute from "@/utils/protector";
+import { Check, CheckBox, CheckBoxOutlineBlank, Close } from "@mui/icons-material";
 
 export default function ViewProduct({ params }) {
     const router = useRouter()
@@ -145,6 +146,30 @@ export default function ViewProduct({ params }) {
         );
     }
 
+    const setOutOfStock = async (e) => {
+        try {
+            if (e.target.checked) {
+                setProduct((prev) => ({
+                    ...prev,
+                    outOfStock: true,
+                }));
+            } else {
+                setProduct((prev) => ({
+                    ...prev,
+                    outOfStock: false,
+                }));
+            }
+            await api.put(`/product/outOfStock/${slug}`, e.target.checked, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+        }
+        catch (e) {
+            console.error(e)
+        }
+    }
+
     const submit = async () => {
         try {
             api.put(`/product/discount/${slug}`, newDiscountPrice, {
@@ -180,7 +205,7 @@ export default function ViewProduct({ params }) {
 
                     {/* Thumbnail Scrollable Image Gallery */}
                     {images?.length > 0 && (
-                        <Box sx={{ overflowX: 'auto', scrollbarWidth: 'none', display: 'flex', gap: 1, px: 2, mt: 2, placeContent:'center' }}>
+                        <Box sx={{ overflowX: 'auto', scrollbarWidth: 'none', display: 'flex', gap: 1, px: 2, mt: 2, placeContent: 'center' }}>
                             {images.map((x, index) => (
                                 <CardMedia
                                     key={index}
@@ -246,6 +271,20 @@ export default function ViewProduct({ params }) {
                                 />
                             }
                             label=""
+                        />
+                        <FormControlLabel
+                            sx={{ color: '#f00' }}
+                            control={
+                                <Checkbox
+                                    checked={product?.outOfStock}
+                                    onChange={(e) => {
+                                        setOutOfStock(e)
+                                    }}
+                                    // icon={<CheckBox sx={{ color: 'gray' }} />}
+                                    // checkedIcon={<CheckBoxOutlineBlank sx={{ color: 'orange' }} />}
+                                />
+                            }
+                            label="Out of stock"
                         />
                     </Box>
 

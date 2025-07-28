@@ -1,6 +1,9 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { messaging } from '@/utils/firebase';
+import { getToken, onMessage } from "firebase/messaging";
+import API from '@/api';
 
 interface User {
   id: number;
@@ -9,6 +12,7 @@ interface User {
   email: string | null;
   phoneNumber: string;
   token: string;
+  fcmToken: string
 }
 
 interface UserContextType {
@@ -22,15 +26,38 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+  const api = API()
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter()
 
+  const requestPermission = async () => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const permission = await Notification.requestPermission();
+        const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+        if (permission === "granted") {
+          const token = await getToken(messaging, {
+            vapidKey: "BM71MSQ3H6NRxuMvvPdtWPMtoz_allOynbIWDZeyikouwpmpAVdi29aRpyEYzIHP2KLRp0ttXi7EO3Cj08D-Lz0", // From Firebase Console
+            serviceWorkerRegistration: swReg,
+          });
+          console.log("FCM Token:", token);
+          const u = JSON.parse(storedUser)
+          u['fcmToken'] = token
+          setUser(u);
+          await api.put(`/dispatcher/updateFcm/${u?.id}`,{token})
+        }
+
+      }
+
+    } catch (err) {
+      console.error("Permission denied or error", err);
+    }
+  };
+
   // Load user from localStorage on first render
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    requestPermission()
   }, []);
 
   const login = (userData: User) => {
@@ -44,7 +71,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     router.push('/')
-    
+
   };
 
   const updateProfile = (updatedData: Partial<User>) => {

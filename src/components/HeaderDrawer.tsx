@@ -22,6 +22,8 @@ import SearchIcon from '@mui/icons-material/SearchOutlined';
 import { History, Home, Login, Logout, MaleOutlined, Man2, ManOutlined, ShoppingCart, Store } from '@mui/icons-material';
 import { usePathname, useRouter } from 'next/navigation';
 import { useUser } from '@/contexts/UserContext';
+   import { messaging } from '@/utils/firebase';
+    import { getToken, onMessage } from "firebase/messaging";
 
 // const navItems = ['Home', 'Shop', 'Contact'];
 
@@ -54,6 +56,27 @@ const TransparentResponsiveHeader = () => {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, [isMobile]);
+
+    const requestPermission = async () => {
+        try {
+            const permission = await Notification.requestPermission();
+            const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+            if (permission === "granted") {
+                const token = await getToken(messaging, {
+                    vapidKey: "BM71MSQ3H6NRxuMvvPdtWPMtoz_allOynbIWDZeyikouwpmpAVdi29aRpyEYzIHP2KLRp0ttXi7EO3Cj08D-Lz0", // From Firebase Console
+                    serviceWorkerRegistration: swReg,
+                });
+                console.log("FCM Token:", token);
+            }
+        } catch (err) {
+            console.error("Permission denied or error", err);
+        }
+    };
+
+    useEffect(() => {
+        requestPermission()
+    }, [])
+
 
     const router = useRouter()
 
@@ -128,13 +151,13 @@ const TransparentResponsiveHeader = () => {
                 ModalProps={{ keepMounted: true }}
             >
                 <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer}>
-                    <Box sx={{placeItems:'center', height:'10vh', alignContent:'center', backgroundColor:'#dbdbdb'}}>
+                    <Box sx={{ placeItems: 'center', height: '10vh', alignContent: 'center', backgroundColor: '#dbdbdb' }}>
                         <Typography variant="h6" fontWeight="bold" sx={{ whiteSpace: 'nowrap' }}>
-                        <Box component="span" sx={{ color: "#ff6c00" }}>VIA</Box>
-                        <Box component="span" sx={{ color: "#000000" }}>mart</Box>
-                    </Typography>
+                            <Box component="span" sx={{ color: "#ff6c00" }}>VIA</Box>
+                            <Box component="span" sx={{ color: "#000000" }}>mart</Box>
+                        </Typography>
                     </Box>
-                    
+
                     <List>
                         {navItems.map((text) => (
                             <ListItem key={text.name}

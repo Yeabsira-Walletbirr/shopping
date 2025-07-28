@@ -35,6 +35,7 @@ export default function AddProductForm({ params }) {
     const [price, setPrice] = useState(1);
     const [photo, setPhoto] = useState('');
     const [images, setImages] = useState([]);
+    const [quantity, setQuantity] = useState()
     const handleSubmit = async () => {
         const payload = {
             name,
@@ -43,7 +44,8 @@ export default function AddProductForm({ params }) {
             place: { id: slug },
             price,
             photo, 
-            images
+            images,
+            quantity
         };
 
         try {
@@ -107,6 +109,14 @@ export default function AddProductForm({ params }) {
                                 rows={4}
                                 value={price}
                                 onChange={(e) => setPrice(e.target.value && parseInt(e.target.value))}
+                            />
+                            <TextField
+                                label="Quantity"
+                                fullWidth
+                                type="number"
+                                rows={4}
+                                value={quantity}
+                                onChange={(e) => setQuantity(e.target.value && parseInt(e.target.value))}
                             />
                             <FileUpload label={'Upload Photo'} onUploadSuccess={onUploadSuccess} />
 

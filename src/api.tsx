@@ -3,6 +3,7 @@
 import React from 'react';
 import axios, { AxiosInstance } from 'axios';
 import { Snackbar, Alert, AlertColor } from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 const BASE_URL = process.env.NEXT_PUBLIC_ADP_BASE_URL || '';
 
@@ -13,6 +14,7 @@ type SnackbarState = {
 };
 
 const useCrudApi = () => {
+  const router = useRouter()
   const [snackbar, setSnackbar] = React.useState<SnackbarState>({
     open: false,
     message: '',
@@ -53,13 +55,17 @@ const useCrudApi = () => {
       });
       return response.data;
     } catch (error: any) {
+      if (error.status == 401) {
+        localStorage.clear()
+        router.push('/auth')
+      }
       showError(error?.response?.data?.message || 'Error fetching data');
       throw error;
     }
   };
 
 
-  const post = async (url: string, data: any, config?:any) => {
+  const post = async (url: string, data: any, config?: any) => {
     try {
       const response = await createApiInstance().post(url, data, {
         ...config, // ✅ allows responseType: 'blob'
@@ -72,7 +78,7 @@ const useCrudApi = () => {
     }
   };
 
-  const put = async (url: string, data: any, config:any) => {
+  const put = async (url: string, data: any, config?: any) => {
     try {
       const response = await createApiInstance().put(url, data, {
         ...config

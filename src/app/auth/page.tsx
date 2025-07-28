@@ -14,6 +14,10 @@ import usePostHook from '@/hooks/usePostHook';
 import API from '@/api'
 import { useUser } from '@/contexts/UserContext';
 
+
+import { messaging } from '@/utils/firebase';
+import { getToken, onMessage } from "firebase/messaging";
+
 export default function PhoneAuth() {
   const router = useRouter()
   const [step, setStep] = useState<'enterPhone' | 'enterOTP' | 'enterName'>('enterPhone');
@@ -26,12 +30,12 @@ export default function PhoneAuth() {
   const api = API()
   const user = useUser()
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(user)
-    if(user?.isAuthenticated == true){
+    if (user?.isAuthenticated == true) {
       router.push('/home')
     }
-  },[])
+  }, [])
 
   const handleSendOTP = async () => {
 
@@ -42,8 +46,8 @@ export default function PhoneAuth() {
         setStep('enterOTP');
 
       }
-      catch(e) {
-    alert(e)
+      catch (e) {
+        alert(e)
 
       }
     } else {
@@ -61,16 +65,41 @@ export default function PhoneAuth() {
   const handleVerifyOTP = async () => {
     if (!otp) return alert('Enter OTP');
     // Simulate OTP check
-    
-      try {
-        const res = await api.authenticate('/auth/verify', { identifier: phone, otp: otp })
-        console.log(res)
-        user.login(res)
-        router.push('/')
+
+    try {
+      const res = await api.authenticate('/auth/verify', { identifier: phone, otp: otp })
+      requestPermission(res)
+      user.login(res)
+      router.push('/')
+    }
+    catch (e) {
+      console.log(e)
+    }
+  };
+
+  const requestPermission = async (u) => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const permission = await Notification.requestPermission();
+        const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+        if (permission === "granted") {
+          const token = await getToken(messaging, {
+            vapidKey: "BM71MSQ3H6NRxuMvvPdtWPMtoz_allOynbIWDZeyikouwpmpAVdi29aRpyEYzIHP2KLRp0ttXi7EO3Cj08D-Lz0", // From Firebase Console
+            serviceWorkerRegistration: swReg,
+          });
+          console.log("FCM Token:", token);
+
+          u['fcmToken'] = token
+          user.updateProfile(u);
+          await api.put(`/dispatcher/updateFcm/${u?.id}`, { token })
+        }
+
       }
-      catch (e) {
-        console.log(e)
-      }
+
+    } catch (err) {
+      console.error("Permission denied or error", err);
+    }
   };
 
   const handleSignupFinish = () => {
@@ -82,15 +111,15 @@ export default function PhoneAuth() {
     !user?.isAuthenticated &&
     <Box minHeight="60vh" display="flex" justifyContent="center" alignItems="center" px={2}>
       <Card sx={{ p: 4, borderRadius: 3, boxShadow: 5, maxWidth: 400, width: '100%' }}>
-        <div style={{display:'flex', justifyContent:'center'}}>
-        <Typography sx={{ color: 'orange' }} variant="h3" fontWeight="bold" gutterBottom textAlign="center">
-          VIA
-        </Typography>
-        <Typography sx={{ color: 'black' }} variant="h3" fontWeight="bold" gutterBottom textAlign="center">
-          mart
-        </Typography>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Typography sx={{ color: 'orange' }} variant="h3" fontWeight="bold" gutterBottom textAlign="center">
+            VIA
+          </Typography>
+          <Typography sx={{ color: 'black' }} variant="h3" fontWeight="bold" gutterBottom textAlign="center">
+            mart
+          </Typography>
         </div>
-        
+
         <Typography variant="h5" fontWeight="bold" gutterBottom textAlign="center">
           {isSignup ? 'Sign Up' : 'Sign In'}
         </Typography>

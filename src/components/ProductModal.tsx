@@ -2,24 +2,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
     Box,
-    CardMedia,
     Typography,
     Modal,
     IconButton,
     Button,
     Rating,
     Slide,
+    Stack,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { Star } from '@mui/icons-material';
+import { ArrowBack, Star } from '@mui/icons-material';
 import { useKeenSlider } from 'keen-slider/react';
 import 'keen-slider/keen-slider.min.css';
-import { useCart } from '@/contexts/CartContext';
 import { useRouter } from 'next/navigation';
 import API from '@/api';
 import { useUser } from '@/contexts/UserContext';
@@ -74,58 +72,27 @@ const ProductModal: React.FC<ProductModalProps> = ({
     yourRating,
 }) => {
     const [quantity, setQuantity] = useState(1);
-    const priceNumber = price;
-    const total = (priceNumber * quantity).toFixed(2);
     const [viewerHeight, setViewerHeight] = useState(250);
     const [currentSlide, setCurrentSlide] = useState(0);
-    const startY = useRef(null);
+    const startY = useRef<number | null>(null);
     const [rating, setRating] = useState(0);
     const [yourRate, setYourRate] = useState(0);
-
-    // New states for rating comment input
     const [pendingRating, setPendingRating] = useState<number | null>(null);
     const [commentInput, setCommentInput] = useState('');
     const [showCommentInput, setShowCommentInput] = useState(false);
 
+    const [allImages, setAllImages] = useState<string[]>([]);
+    const [showComment, setShowComment] = useState(false);
+    const [ratings, setRatings] = useState<any[]>([]);
+    const [page, setPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const [loading, setLoading] = useState(false);
+
+    const scrollRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const api = API();
     const user = useUser();
-
-    const [allImages, setAllImages] = useState([])
-
-    useEffect(() => {
-        setYourRate(yourRating);
-        setRating(rate);
-        setAllImages([photoDataUrl])
-        if (open && images?.length > 0) {
-            const fetchAllImages = async () => {
-                try {
-                    const temp = await Promise.all(
-                        images.map(async (x) => {
-                            const fileRes = await api.get(`/files/view/${x}`, null, {
-                                responseType: 'blob',
-                            });
-                            const imageObjectURL = URL.createObjectURL(fileRes);
-                            return imageObjectURL;
-                        })
-                    );
-
-                    setAllImages([...allImages, ...temp]);
-                } catch (error) {
-                    console.error("Failed to fetch images", error);
-                }
-            };
-
-            fetchAllImages();
-        }
-
-
-    }, [open]);
-
-    const handleClose = () => {
-        setShowContent(false);
-        setTimeout(() => setOpen(false), 300);
-    };
+    const total = (price * quantity).toFixed(2);
 
     const [sliderRef] = useKeenSlider<HTMLDivElement>({
         loop: true,
@@ -135,11 +102,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
         },
     });
 
-    const handleTouchStart = (e: { touches: { clientY: number }[] }) => {
+    const handleTouchStart = (e: React.TouchEvent) => {
         startY.current = e.touches[0].clientY;
     };
 
-    const handleTouchMove = (e: { touches: { clientY: number }[] }) => {
+    const handleTouchMove = (e: React.TouchEvent) => {
         if (startY.current !== null) {
             const deltaY = e.touches[0].clientY - startY.current;
             if (deltaY > 0) handleClose();
@@ -148,6 +115,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
     const handleTouchEnd = () => {
         startY.current = null;
+    };
+
+    const handleClose = () => {
+        setShowContent(false);
+        setTimeout(() => setOpen(false), 300);
     };
 
     const rateProduct = async (r: number, comment: string) => {
@@ -166,6 +138,83 @@ const ProductModal: React.FC<ProductModalProps> = ({
         }
     };
 
+    const fetchRatings = async () => {
+        if (loading || !hasMore) return;
+
+        setLoading(true);
+        try {
+            const res = await api.get('/product/getRatingsByProduct', {
+                page,
+                pageSize: 10,
+                id,
+            });
+            setRatings((prev) => [...prev, ...res?.content]);
+            setHasMore(!res.last);
+        } catch (err) {
+            console.error('Failed to fetch ratings', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const [totalView, setTotalView] = useState(0);
+    const countView = async () => {
+        try {
+            const res = await api.get(`/product/countView/${id}`);
+            setTotalView(res)
+        } catch (error) {
+            console.error('Rating failed', error);
+        }
+    };
+
+    useEffect(() => {
+        setYourRate(yourRating);
+        setRating(rate);
+        setAllImages([photoDataUrl]);
+        setTotalView(view)
+        if (open && images?.length > 0) {
+            const fetchAllImages = async () => {
+                try {
+                    const temp = await Promise.all(
+                        images.map(async (x) => {
+                            const fileRes = await api.get(`/files/view/${x}`, null, {
+                                responseType: 'blob',
+                            });
+                            return URL.createObjectURL(fileRes);
+                        })
+                    );
+                    setAllImages([photoDataUrl, ...temp]);
+                } catch (error) {
+                    console.error("Failed to fetch images", error);
+                }
+            };
+            fetchAllImages();
+        }
+        if (open) {
+            countView()
+        }
+    }, [open]);
+
+    useEffect(() => {
+        if (showComment) fetchRatings();
+    }, [page, showComment]);
+
+    useEffect(() => {
+        const container = scrollRef.current;
+        if (!container || !showComment) return;
+
+        const handleScroll = () => {
+            const { scrollTop, scrollHeight, clientHeight } = container;
+            const isBottom = scrollTop + clientHeight >= scrollHeight - 20;
+            if (isBottom && hasMore && !loading) {
+                setPage((prev) => prev + 1);
+            }
+        };
+
+        container.addEventListener('scroll', handleScroll);
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, [showComment, hasMore, loading]);
+
     return (
         <Modal open={open} onClose={handleClose} closeAfterTransition>
             <Slide
@@ -178,27 +227,25 @@ const ProductModal: React.FC<ProductModalProps> = ({
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
             >
-                <Box
-                    sx={{
-                        width: '100%',
-                        maxWidth: { xs: '100%', sm: '50%' },
-                        bgcolor: 'background.paper',
-                        position: 'absolute',
-                        bottom: { xs: 0, sm: '10%' },
-                        left: { sm: '25%' },
-                        transform: { sm: 'translate(-50%, -50%)' },
-                        borderRadius: { xs: '20px 20px 0 0', sm: 4 },
-                        boxShadow: '0px 0px 10px 1px rgb(31, 31, 31)',
-                        overflowY: 'auto',
-                        maxHeight: '100vh',
-                    }}
-                >
+                <Box sx={{
+                    width: '100%',
+                    maxWidth: { xs: '100%', sm: '50%' },
+                    bgcolor: 'background.paper',
+                    position: 'absolute',
+                    bottom: { xs: 0, sm: '10%' },
+                    left: { sm: '25%' },
+                    transform: { sm: 'translate(-50%, -50%)' },
+                    borderRadius: { xs: '20px 20px 0 0', sm: 4 },
+                    boxShadow: '0px 0px 10px 1px rgb(31, 31, 31)',
+                    overflowY: 'auto',
+                    maxHeight: '100vh',
+                }}>
                     <Box
                         ref={sliderRef}
                         className="keen-slider"
                         sx={{
                             height: viewerHeight,
-                            transition: 'height 0.3s ease',
+        transition: 'height 0.4s ease-in-out',
                             backgroundColor: '#000',
                             borderTopLeftRadius: '20px',
                             borderTopRightRadius: '20px',
@@ -225,50 +272,40 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
                     <Box sx={{ textAlign: 'center', mt: 1 }}>
                         {allImages.map((_, idx) => (
-                            <Box
-                                key={idx}
-                                component="span"
-                                sx={{
-                                    display: 'inline-block',
-                                    width: 10,
-                                    height: 10,
-                                    mx: 0.5,
-                                    borderRadius: '50%',
-                                    backgroundColor:
-                                        idx === currentSlide ? 'primary.main' : 'grey.400',
-                                }}
-                            />
+                            <Box key={idx} component="span" sx={{
+                                display: 'inline-block',
+                                width: 10,
+                                height: 10,
+                                mx: 0.5,
+                                borderRadius: '50%',
+                                backgroundColor: idx === currentSlide ? 'primary.main' : 'grey.400',
+                            }} />
                         ))}
                     </Box>
 
+                    {!showComment ? (
+                        <Box sx={{ p: { xs: 2, sm: 3 }, minHeight: '40vh' }}>
+                            <Typography variant="h6" fontWeight="bold">{title}</Typography>
+                            <Typography color="text.secondary" gutterBottom>{place?.name}</Typography>
 
-                    <Box sx={{ p: { xs: 2, sm: 3 } }}>
-                        <Typography variant="h6" fontWeight="bold">
-                            {title}
-                        </Typography>
-                        <Typography color="text.secondary" gutterBottom>
-                            {place?.name}
-                        </Typography>
+                            <Rating
+                                value={yourRate}
+                                onChange={(e, newValue) => {
+                                    if (newValue) {
+                                        setPendingRating(newValue);
+                                        setYourRate(newValue);
+                                        setShowCommentInput(true);
+                                    }
+                                }}
+                                precision={1}
+                                sx={{ mb: 1 }}
+                            />
 
-                        <Rating
-                            onChange={(e, newValue) => {
-                                if (newValue) {
-                                    setPendingRating(newValue);
-                                    setYourRate(newValue)
-                                    setShowCommentInput(true);
-                                }
-                            }}
-                            value={yourRate}
-                            precision={1}
-                            sx={{ mb: 1 }}
-                        />
-
-                        {showCommentInput && (
-                            <Box sx={{ mb: 2 }}>
-                                <Typography variant="body2" gutterBottom>
-                                    Please leave a comment for your rating
-                                </Typography>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            {showCommentInput && (
+                                <Box sx={{ mb: 2 }}>
+                                    <Typography variant="body2" gutterBottom>
+                                        Please leave a comment for your rating
+                                    </Typography>
                                     <textarea
                                         value={commentInput}
                                         onChange={(e) => setCommentInput(e.target.value)}
@@ -281,133 +318,121 @@ const ProductModal: React.FC<ProductModalProps> = ({
                                             border: '1px solid #ccc',
                                         }}
                                     />
-                                    <Box
-                                        sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}
-                                    >
-                                        <Button
-                                            variant="outlined"
-                                            size="small"
-                                            onClick={() => {
-                                                setShowCommentInput(false);
-                                                setPendingRating(null);
-                                                setYourRate(yourRating)
-                                                setCommentInput('');
-                                            }}
-                                        >
-                                            Cancel
-                                        </Button>
-                                        <Button
-                                            variant="contained"
-                                            size="small"
-                                            onClick={() => {
-                                                if (pendingRating !== null) {
-                                                    rateProduct(pendingRating, commentInput);
-                                                }
-                                                setShowCommentInput(false);
-                                                setCommentInput('');
-                                            }}
-                                        >
-                                            OK
-                                        </Button>
+                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1, gap: 1 }}>
+                                        <Button size="small" variant="outlined" onClick={() => {
+                                            setShowCommentInput(false);
+                                            setPendingRating(null);
+                                            setYourRate(yourRating);
+                                            setCommentInput('');
+                                        }}>Cancel</Button>
+                                        <Button size="small" variant="contained" onClick={() => {
+                                            if (pendingRating !== null) {
+                                                rateProduct(pendingRating, commentInput);
+                                            }
+                                            setShowCommentInput(false);
+                                            setCommentInput('');
+                                        }}>OK</Button>
                                     </Box>
                                 </Box>
-                            </Box>
-                        )}
-
-                        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
-                            <Typography fontWeight="bold" color="success.main">
-                                {price} ETB
-                            </Typography>
-                            {discount && (
-                                <Typography
-                                    sx={{ textDecoration: 'line-through' }}
-                                    color="text.secondary"
-                                >
-                                    {oldPrice} ETB
-                                </Typography>
                             )}
-                        </Box>
 
-                        <Typography variant="body2" sx={{ mb: 2 }}>
-                            {description}
-                        </Typography>
+                            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
+                                <Typography fontWeight="bold" color="success.main">{price} ETB</Typography>
+                                {discount && (
+                                    <Typography sx={{ textDecoration: 'line-through' }} color="text.secondary">
+                                        {oldPrice} ETB
+                                    </Typography>
+                                )}
+                            </Box>
 
-                        <Box
-                            sx={{
+                            <Typography variant="body2" sx={{ mb: 2 }}>{description}</Typography>
+
+                            <Box sx={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'space-between',
                                 mb: 2,
-                            }}
-                        >
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <IconButton onClick={() => setQuantity(Math.max(1, quantity - 1))}>
-                                    <RemoveIcon />
-                                </IconButton>
-                                <Typography variant="h6" sx={{ mx: 2 }}>
-                                    {quantity}
-                                </Typography>
-                                <IconButton onClick={() => setQuantity(quantity + 1)}>
-                                    <AddIcon />
-                                </IconButton>
+                            }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <IconButton onClick={() => setQuantity(Math.max(1, quantity - 1))}><RemoveIcon /></IconButton>
+                                    <Typography variant="h6" sx={{ mx: 2 }}>{quantity}</Typography>
+                                    <IconButton onClick={() => setQuantity(quantity + 1)}><AddIcon /></IconButton>
+                                </Box>
+                                <Typography fontWeight="bold">Total: {total} ETB</Typography>
                             </Box>
-                            <Typography fontWeight="bold">Total: {total} ETB</Typography>
+
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, boxShadow: 2, p: 1, borderRadius: 5 }}>
+                                <Box display="flex" alignItems="center" gap={1}>
+                                    <IconButton><Star sx={{ color: 'orange' }} /></IconButton>
+                                    <Typography variant="body2">{rating?.toFixed(1)}</Typography>
+                                </Box>
+                                <Box display="flex" alignItems="center" gap={1}>
+                                    <IconButton onClick={() => {
+                                        setRatings([]);
+                                        setPage(0);
+                                        setHasMore(true);
+                                        setShowComment(true);
+                                    }}>
+                                        <ChatBubbleOutlineIcon color="primary" />
+                                    </IconButton>
+                                    <Typography variant="body2">{comment}</Typography>
+                                </Box>
+                                <Box display="flex" alignItems="center" gap={1}>
+                                    <IconButton><VisibilityIcon color="primary" /></IconButton>
+                                    <Typography variant="body2">{totalView}</Typography>
+                                </Box>
+                                <Box display="flex" alignItems="center" gap={1}>
+                                    <IconButton><ShoppingCartIcon color="primary" /></IconButton>
+                                    <Typography variant="body2">{counter}</Typography>
+                                </Box>
+                            </Box>
+
+                            <Button
+                                variant="contained"
+                                fullWidth
+                                sx={{ backgroundColor: 'orange' }}
+                                startIcon={<ShoppingCartIcon />}
+                                onClick={() => {
+                                    handleClose();
+                                    router.push(`/payment?id=${id}&quantity=${quantity}&placeId=${place?.id}`);
+                                }}
+                            >
+                                Order Now
+                            </Button>
                         </Box>
-
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                mb: 2,
-                                boxShadow: 2,
-                                p: 1,
-                                borderRadius: 5,
-                            }}
-                        >
-                            <Box display="flex" alignItems="center" gap={1}>
-                                <IconButton>
-                                    <Star sx={{ color: 'orange' }} />
+                    ) : (
+                        <Box sx={{ p: { xs: 2, sm: 3 }, minHeight: '40vh' }}>
+                            <Stack ref={scrollRef} sx={{ maxHeight: '60vh', overflowY: 'auto', pr: 1 }}>
+                                <IconButton onClick={() => setShowComment(false)} sx={{ width: 40 }}>
+                                    <ArrowBack color="primary" />
                                 </IconButton>
-                                <Typography variant="body2">{rating?.toFixed(1)}</Typography>
-                            </Box>
-
-                            <Box display="flex" alignItems="center" gap={1}>
-                                <IconButton>
-                                    <ChatBubbleOutlineIcon color="primary" />
-                                </IconButton>
-                                <Typography variant="body2">{comment}</Typography>
-                            </Box>
-
-                            <Box display="flex" alignItems="center" gap={1}>
-                                <IconButton>
-                                    <VisibilityIcon color="primary" />
-                                </IconButton>
-                                <Typography variant="body2">{view}</Typography>
-                            </Box>
-
-                            <Box display="flex" alignItems="center" gap={1}>
-                                <IconButton>
-                                    <ShoppingCartIcon color="primary" />
-                                </IconButton>
-                                <Typography variant="body2">{counter}</Typography>
-                            </Box>
+                                {ratings.length === 0 ? (
+                                    <Typography>No comments yet</Typography>
+                                ) : (
+                                    <>
+                                        {ratings.map((rate, index) => (
+                                            <Box key={index} sx={{ borderBottom: '1px solid #eee', mb: 2, pb: 2 }}>
+                                                <Typography fontWeight="bold">
+                                                    {rate?.name || 'Anonymous'}
+                                                </Typography>
+                                                <Rating value={rate?.rating || 0} readOnly size="small" />
+                                                <Typography variant="body2" sx={{ mt: 1 }}>
+                                                    {rate?.comment || 'No comment'}
+                                                </Typography>
+                                            </Box>
+                                        ))}
+                                        {loading && (
+                                            <Box sx={{ textAlign: 'center', py: 2 }}>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    Loading more comments...
+                                                </Typography>
+                                            </Box>
+                                        )}
+                                    </>
+                                )}
+                            </Stack>
                         </Box>
-
-                        <Button
-                            variant="contained"
-                            fullWidth
-                            sx={{
-                                backgroundColor: 'orange',
-                            }}
-                            startIcon={<ShoppingCartIcon />}
-                            onClick={() => {
-                                handleClose();
-                                router.push(`/payment?id=${id}&quantity=${quantity}`);
-                            }}
-                        >
-                            Order Now
-                        </Button>
-                    </Box>
+                    )}
                 </Box>
             </Slide>
         </Modal>
