@@ -1,8 +1,8 @@
 // firebase.js
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore"; // If using Firestore
-import { getAuth } from "firebase/auth";           // If using Auth
-import { getMessaging } from "firebase/messaging"; // If using Push Notifications
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { getMessaging, isSupported } from "firebase/messaging";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAZXe6ARxhIPJo9QTT-nSwrTSHkRioX1ZY",
@@ -18,4 +18,16 @@ const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
 export const auth = getAuth(app);
-export const messaging = getMessaging(app);
+
+// Safe messaging export
+let messaging = null;
+
+isSupported().then((supported) => {
+    if (supported) {
+        messaging = getMessaging(app);
+    } else {
+        console.warn("Firebase Messaging is not supported in this browser.");
+    }
+});
+
+export { messaging };
