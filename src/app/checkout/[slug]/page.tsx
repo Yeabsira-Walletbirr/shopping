@@ -23,9 +23,9 @@ import GooglePlacesAutocomplete from "@/components/GoogleAutocomplete";
 const DELIVERY_FEE = 35;
 
 const Checkout = ({ params }: { params: { slug: string } }) => {
-    const { slug } = React.use(params);
+    // const { slug } = React.use(params);
     // const { slug } = params;
-
+    const { slug } = params;
     const { cartItemsByPlace, getTotalPrice } = useCart();
     const [products, setProducts] = useState<any[]>([]);
     const [total, setTotal] = useState(0);
