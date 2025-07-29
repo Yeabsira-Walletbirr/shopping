@@ -25,17 +25,17 @@ const PRODUCT_TYPES = [
     { label: "OTHER", value: "OTHER" },
 ];
 
-export default function AddProductForm({ params }) {
+export default function AddProductForm({ params }:any) {
     const api = API();
-    const { slug } = React.use(params)
+    const { slug }:any = React.use(params)
 
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
-    const [productType, setProductType] = useState("");
-    const [price, setPrice] = useState(1);
-    const [photo, setPhoto] = useState('');
-    const [images, setImages] = useState([]);
-    const [quantity, setQuantity] = useState()
+    const [name, setName]:any = useState("");
+    const [description, setDescription]:any = useState("");
+    const [productType, setProductType]:any = useState("");
+    const [price, setPrice]:any = useState(1);
+    const [photo, setPhoto]:any = useState('');
+    const [images, setImages]:any = useState([]);
+    const [quantity, setQuantity]:any = useState()
     const handleSubmit = async () => {
         const payload = {
             name,
@@ -60,7 +60,7 @@ export default function AddProductForm({ params }) {
         }
     };
 
-    const onUploadSuccess = (response) => {
+    const onUploadSuccess = (response:any) => {
         setPhoto(response.fileName);
     }
 

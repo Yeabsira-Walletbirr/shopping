@@ -25,10 +25,10 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import ProtectedRoute from "@/utils/protector";
 
 
-function ViewPlace({ params }) {
+function ViewPlace({ params }:any) {
     const api = API();
     const router = useRouter();
-    const { slug } = React.use(params);
+    const { slug }:any = React.use(params);
 
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
@@ -78,7 +78,7 @@ function ViewPlace({ params }) {
             ? { lat: latitude, lng: longitude }
             : { lat: 8.991671, lng: 38.7804249 };
 
-    const handleMapClick = (e) => {
+    const handleMapClick = (e:any) => {
         const lat = e.latLng.lat();
         const lng = e.latLng.lng();
         setLatitude(lat);

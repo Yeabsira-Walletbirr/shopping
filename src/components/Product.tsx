@@ -25,12 +25,13 @@ type ProductItem = {
     price: number;
     photo: object;
     type: string;
-    place: string;
+    place: any;
     rate: number,
     discount:string,
     description:string,
     images:[],
-    percent:number
+    percent:number,
+    photoDataUrl:any
 };
 
 const Product = (productItem: ProductItem) => {

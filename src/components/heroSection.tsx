@@ -26,22 +26,22 @@ const categories = [
 ];
 
 export default function HeroSection() {
-    const [tabIndex, setTabIndex] = useState(0);
+    const [tabIndex, setTabIndex]: any = useState(0);
     const scrollRef = useRef<HTMLDivElement>(null);
     const scrollRef1 = useRef<HTMLDivElement>(null);
     const scrollRef2 = useRef<HTMLDivElement>(null);
 
     const api = API();
 
-    const [products, setProducts] = useState([]);
-    const [page, setPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(1);
+    const [products, setProducts]: any = useState([]);
+    const [page, setPage]: any = useState(0);
+    const [totalPages, setTotalPages]: any = useState(1);
 
-    const [trendingProducts, setTrendingProducts] = useState([]);
-    const [pageTrending, setPageTrending] = useState(0);
-    const [totalTrendingPages, setTotalTrendingPages] = useState(1);
+    const [trendingProducts, setTrendingProducts]: any = useState([]);
+    const [pageTrending, setPageTrending]: any = useState(0);
+    const [totalTrendingPages, setTotalTrendingPages]: any = useState(1);
 
-    const [type, setType] = useState('FOOD');
+    const [type, setType]: any = useState('FOOD');
 
 
     const data = homeData;
@@ -74,7 +74,7 @@ export default function HeroSection() {
                 productType: type
             });
             const newProducts = await getPhoto(res);
-            setProducts(prev =>
+            setProducts((prev: any) =>
                 append ? [...prev, ...newProducts] : newProducts
             );
             setTotalPages(res.totalPages || 1);
@@ -92,7 +92,7 @@ export default function HeroSection() {
                 productType: type
             });
             const newTrending = await getPhoto(res2);
-            setTrendingProducts(prev =>
+            setTrendingProducts((prev: any) =>
                 append ? [...prev, ...newTrending] : newTrending
             );
             setTotalTrendingPages(res2.totalPages || 1);
@@ -103,9 +103,9 @@ export default function HeroSection() {
     };
 
 
-    const [places, setPlaces] = useState([]);
-    const [pagePlaces, setPagePlaces] = useState(0);
-    const [totalPlacesPages, setTotalPlacesPages] = useState(1);
+    const [places, setPlaces]: any = useState([]);
+    const [pagePlaces, setPagePlaces]: any = useState(0);
+    const [totalPlacesPages, setTotalPlacesPages]: any = useState(1);
 
     const fetchPlaces = async (pageNumber = 0, append = false) => {
         try {
@@ -119,7 +119,7 @@ export default function HeroSection() {
             });
 
             const placesWithPhotos = await Promise.all(
-                data?.content?.map(async (place) => {
+                data?.content?.map(async (place: any) => {
                     if (place.photo) {
                         try {
                             const res = await api.get(`/files/view/${place.photo}`, null, {
@@ -138,7 +138,7 @@ export default function HeroSection() {
                 })
             );
 
-            setPlaces(prev =>
+            setPlaces((prev: any) =>
                 append ? [...prev, ...placesWithPhotos] : placesWithPhotos
             );
             setTotalPlacesPages(data.totalPages || 1);
@@ -174,34 +174,34 @@ export default function HeroSection() {
     return (
 
         <Box>
-            
+
             <Box
-  sx={{
-    position: 'sticky',
-    top: 0,
-    zIndex: 10,
-    backgroundColor: 'background.paper',
-    borderBottom: 1,
-    borderColor: 'divider',
-  }}
->
-  <Tabs
-    value={tabIndex}
-    onChange={(_, newVal) => {
-      scrollRef.current?.scrollTo({ left: 0, behavior: 'smooth' });
-      scrollRef1.current?.scrollTo({ left: 0, behavior: 'smooth' });
-      scrollRef2.current?.scrollTo({ left: 0, behavior: 'smooth' });
-      setTabIndex(newVal);
-      setType(categories[newVal]?.value);
-    }}
-    variant="scrollable"
-    scrollButtons="auto"
-  >
-    {categories.map((cat) => (
-      <Tab key={cat.value} label={cat.name} sx={{ textTransform: 'none' }} />
-    ))}
-  </Tabs>
-</Box>
+                sx={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 10,
+                    backgroundColor: 'background.paper',
+                    borderBottom: 1,
+                    borderColor: 'divider',
+                }}
+            >
+                <Tabs
+                    value={tabIndex}
+                    onChange={(_, newVal) => {
+                        scrollRef.current?.scrollTo({ left: 0, behavior: 'smooth' });
+                        scrollRef1.current?.scrollTo({ left: 0, behavior: 'smooth' });
+                        scrollRef2.current?.scrollTo({ left: 0, behavior: 'smooth' });
+                        setTabIndex(newVal);
+                        setType(categories[newVal]?.value);
+                    }}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                >
+                    {categories.map((cat) => (
+                        <Tab key={cat.value} label={cat.name} sx={{ textTransform: 'none' }} />
+                    ))}
+                </Tabs>
+            </Box>
 
             {
                 (products?.length > 0 || trendingProducts?.length > 0 || places?.length > 0) ?
@@ -212,7 +212,7 @@ export default function HeroSection() {
                                 sx={{ display: 'flex', overflowX: 'auto', pb: 1, scrollbarWidth: 'none' }}
                                 onScroll={handleScroll}
                             >
-                                {products?.map(p => (
+                                {products?.map((p:any) => (
                                     <Box key={p.id}><Product {...p} /></Box>
                                 ))}
                             </Box>
@@ -229,7 +229,7 @@ export default function HeroSection() {
                                         sx={{ display: 'flex', overflowX: 'auto', pb: 2, scrollbarWidth: 'none' }}
                                         onScroll={handleScrollTrending}
                                     >
-                                        {trendingProducts?.map(p => (
+                                        {trendingProducts?.map((p:any) => (
                                             <Box sx={{ padding: 1 }} key={p.id}><TrendingProduct {...p} /></Box>
                                         ))}
                                     </Box>
@@ -244,7 +244,7 @@ export default function HeroSection() {
                                     <Typography variant="h6" fontWeight="bold" gutterBottom>
                                         Nearby Places
                                     </Typography>
-                                    {places?.map(p => (
+                                    {places?.map((p:any) => (
                                         // console.log(p)
                                         <Box sx={{ p: 1 }} key={p.id}><Place {...p} /></Box>
                                     ))}
@@ -254,7 +254,7 @@ export default function HeroSection() {
 
                     </>
                     :
-                    <Typography height={'82vh'} sx={{alignContent:'center', justifySelf:'center'}}>
+                    <Typography height={'82vh'} sx={{ alignContent: 'center', justifySelf: 'center' }}>
                         No content available
                     </Typography>
             }

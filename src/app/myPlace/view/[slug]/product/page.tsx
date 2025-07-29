@@ -22,17 +22,17 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ProtectedRoute from "@/utils/protector";
 
-const ViewProducts = ({ params }) => {
+const ViewProducts = ({ params }:any) => {
     const router = useRouter()
 
-    const { slug } = React.use(params);
+    const { slug }:any = React.use(params);
     const api = API();
 
-    const [products, setProducts] = useState([]);
-    const [page, setPage] = useState(0); // 0-based
-    const [totalPages, setTotalPages] = useState(1);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [products, setProducts]:any = useState([]);
+    const [page, setPage]:any = useState(0); // 0-based
+    const [totalPages, setTotalPages]:any = useState(1);
+    const [loading, setLoading]:any = useState(false);
+    const [error, setError]:any = useState(null);
 
     const fetchProducts = async (pageNumber = 0) => {
         setLoading(true);
@@ -45,7 +45,7 @@ const ViewProducts = ({ params }) => {
             })
 
             const productWithPhotos = await Promise.all(
-                res?.content?.map(async (p) => {
+                res?.content?.map(async (p:any) => {
                     if (p.photo) {
                         try {
                             const res = await api.get(`/files/view/${p.photo}`, null, {
@@ -77,11 +77,11 @@ const ViewProducts = ({ params }) => {
         fetchProducts();
     }, []);
 
-    const handlePageChange = (_, value) => {
+    const handlePageChange = (_:any, value:any) => {
         fetchProducts(value - 1); // MUI uses 1-based, backend likely 0-based
     };
 
-    const statusColors = {
+    const statusColors:any = {
         APPROVED: 'green',
         UNAPPROVED: '#ffc300',
         DECLINED: 'red',
@@ -107,7 +107,7 @@ const ViewProducts = ({ params }) => {
                             <Alert severity="info">No products found.</Alert>
                         ) : (
                             <Grid container spacing={2}>
-                                {products.map((product) => (
+                                {products.map((product:any) => (
                                     <Grid sx={{ width: { xs: '100%', sm: "100%", md: '50%' } }} key={product.id} onClick={() => router.push(`/product/view/${product.id}`)}>
                                         <Card sx={{ height: '100%' }}>
                                             {product.photoDataUrl && (
@@ -123,15 +123,15 @@ const ViewProducts = ({ params }) => {
                                                     <Typography variant="h5" gutterBottom>
                                                         {product.title}
                                                     </Typography>
-<Box sx={{display:'flex'}}>
-    <Typography sx={{ borderRadius: 2, backgroundColor: statusColors[product.status], color: 'white', p: 1 }} fontWeight={700} gutterBottom>
-                                                        {product.status}
-                                                    </Typography>
-                                                    {product?.outOfStock && <Typography sx={{ borderRadius: 2, backgroundColor: 'red', color: 'white', p: 1 }} fontWeight={700} gutterBottom>
-                                                        Out of stock
-                                                    </Typography>}
-</Box>
-                                                    
+                                                    <Box sx={{ display: 'flex' }}>
+                                                        <Typography sx={{ borderRadius: 2, backgroundColor: statusColors[product.status], color: 'white', p: 1 }} fontWeight={700} gutterBottom>
+                                                            {product.status}
+                                                        </Typography>
+                                                        {product?.outOfStock && <Typography sx={{ borderRadius: 2, backgroundColor: 'red', color: 'white', p: 1 }} fontWeight={700} gutterBottom>
+                                                            Out of stock
+                                                        </Typography>}
+                                                    </Box>
+
                                                 </Box>
                                                 <Typography variant="body2" color="text.secondary">
                                                     {product.description}

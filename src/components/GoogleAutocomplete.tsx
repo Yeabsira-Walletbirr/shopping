@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import usePlacesAutocomplete, {
   getGeocode,
@@ -5,7 +7,7 @@ import usePlacesAutocomplete, {
 } from 'use-places-autocomplete';
 import { TextField, Autocomplete } from '@mui/material';
 
-export default function GooglePlacesAutocomplete({ onSelect }) {
+export default function GooglePlacesAutocomplete({ onSelect }: any) {
   const {
     ready,
     value,
@@ -13,11 +15,12 @@ export default function GooglePlacesAutocomplete({ onSelect }) {
     suggestions: { status, data },
     clearSuggestions,
   } = usePlacesAutocomplete({
-    requestOptions: {
-      location: { lat: () => 9.03, lng: () => 38.74 }, // Addis Ababa center
-      radius: 20000, // 20km radius
-      strictBounds: false,
-    },
+    requestOptions: typeof window !== 'undefined' && window.google
+      ? {
+          location: new window.google.maps.LatLng(9.03, 38.74),
+          radius: 20000,
+        }
+      : undefined,
   });
 
   const handleSelect = async (address: any) => {
@@ -35,9 +38,16 @@ export default function GooglePlacesAutocomplete({ onSelect }) {
       options={status === 'OK' ? data.map((suggestion) => suggestion.description) : []}
       inputValue={value}
       onInputChange={(e, newInputValue) => setValue(newInputValue)}
-      onChange={(e, newValue) => handleSelect(newValue)}
+      onChange={(e, newValue) => {
+        if (newValue) handleSelect(newValue);
+      }}
       renderInput={(params) => (
-        <TextField {...params} label="Search location in Addis Ababa" variant="outlined" fullWidth />
+        <TextField
+          {...params}
+          label="Search location in Addis Ababa"
+          variant="outlined"
+          fullWidth
+        />
       )}
       disabled={!ready}
     />

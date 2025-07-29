@@ -9,8 +9,8 @@ import {
   Stack,
   Button,
   Divider,
-  Grid,
 } from '@mui/material';
+import {Grid} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -39,7 +39,7 @@ const mockUser: User = {
 };
 
 const UserProfile = () => {
-  const user = useUser();
+  const user:any = useUser();
 
   return (
     <ProtectedRoute>
@@ -99,7 +99,7 @@ const InfoItem = ({
   label: string;
   value: string;
 }) => (
-  <Grid item xs={12} sm={6}>
+  <Grid size={{xs:12, sm:6}}>
     <Stack direction="row" alignItems="center" spacing={1}>
       {icon}
       <Typography fontWeight={600}>{label}:</Typography>

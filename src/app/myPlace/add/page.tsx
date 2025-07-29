@@ -9,22 +9,21 @@ import { GoogleMap, Marker } from "@react-google-maps/api";
 import { useUser } from "@/contexts/UserContext";
 import ProtectedRoute from "@/utils/protector";
 
-function EditPlace({ params }) {
+function EditPlace({ params }:any) {
     const api = API();
     const router = useRouter();
-    const { slug } = React.use(params);
 
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
-    const [placeType, setPlaceType] = useState([]);
-    const [productTypes, setProductTypes] = useState([]);
+    const [placeType, setPlaceType]:any = useState([]);
+    const [productTypes, setProductTypes]:any = useState([]);
     const [photo, setPhoto] = useState('');
     const [description, setDescription] = useState('');
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
     const user = useUser()
 
-    const uploadSuccess = (response) => {
+    const uploadSuccess = (response:any) => {
         setPhoto(response?.fileName);
     };
 
@@ -66,7 +65,7 @@ function EditPlace({ params }) {
         ? { lat: latitude, lng: longitude }
         : { lat: 8.991671, lng: 38.7804249 };
 
-    const handleMapClick = (e) => {
+    const handleMapClick = (e:any) => {
         const lat = e.latLng.lat();
         const lng = e.latLng.lng();
         setLatitude(lat);

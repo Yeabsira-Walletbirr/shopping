@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import API from '@/api';
 import { useRouter } from 'next/navigation';
 
-const useGethook = (urls,dependencies) => {
+const useGethook = (urls:any,dependencies:any) => {
 
   const api = API();
-  const [data, setData] = useState([]);
+  const [data, setData]:any = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const router = useRouter();
+  const router:any = useRouter();
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -18,14 +18,14 @@ const useGethook = (urls,dependencies) => {
       setLoading(true);
       try {
         const responses = await Promise.all(
-          urls.map((url) =>
+          urls.map((url:any) =>
             api.get(url)
           )
         );
         const resultData = responses.map((response) => response.data);
 
         setData(resultData);
-      } catch (err) {
+      } catch (err:any) {
         
         setError(err);
       } finally {

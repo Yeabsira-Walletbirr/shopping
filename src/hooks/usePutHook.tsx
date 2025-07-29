@@ -8,7 +8,7 @@ const usePutHook = () => {
   const api = API();
   const router = useRouter();
 
-  const handlePut = async (url, payload) => {
+  const handlePut = async (url:any, payload:any) => {
     const headers = {
       'Authorization': `Bearer ${localStorage.getItem('token')}`,
     };
@@ -27,7 +27,7 @@ const usePutHook = () => {
       }
 
 
-    } catch (err) {
+    } catch (err:any) {
       setError(err);
     } finally {
       setLoading(false);

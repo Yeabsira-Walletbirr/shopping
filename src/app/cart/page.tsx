@@ -3,8 +3,14 @@ import CartPage from '@/components/cart';
 import ProtectedRoute from '@/utils/protector';
 import React, { useState } from 'react';
 
+
+type CartItem = {
+  title: string;
+  quantity: number;
+};
+
 const CartScreen = () => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   const handleAdd = (title: string) => {
     setCartItems((prev) =>
@@ -32,12 +38,7 @@ const CartScreen = () => {
 
   return (
     <ProtectedRoute>
-      <CartPage
-        cart={cartItems}
-        onAdd={handleAdd}
-        onRemove={handleRemove}
-        onDelete={handleDelete}
-      />
+      <CartPage/>
     </ProtectedRoute>
   );
 };

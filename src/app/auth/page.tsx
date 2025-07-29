@@ -14,8 +14,8 @@ import usePostHook from '@/hooks/usePostHook';
 import API from '@/api'
 import { useUser } from '@/contexts/UserContext';
 
+import { messaging, initializeMessaging } from '@/utils/firebase';
 
-import { messaging } from '@/utils/firebase';
 import { getToken, onMessage } from "firebase/messaging";
 
 export default function PhoneAuth() {
@@ -77,30 +77,33 @@ export default function PhoneAuth() {
     }
   };
 
-  const requestPermission = async (u) => {
-    try {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        const permission = await Notification.requestPermission();
-        const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
-        if (permission === "granted") {
-          const token = await getToken(messaging, {
-            vapidKey: "BM71MSQ3H6NRxuMvvPdtWPMtoz_allOynbIWDZeyikouwpmpAVdi29aRpyEYzIHP2KLRp0ttXi7EO3Cj08D-Lz0", // From Firebase Console
-            serviceWorkerRegistration: swReg,
-          });
-          console.log("FCM Token:", token);
+  const requestPermission = async (u:any) => {
+  try {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) return;
 
-          u['fcmToken'] = token
-          user.updateProfile(u);
-          await api.put(`/dispatcher/updateFcm/${u?.id}`, { token })
-        }
+    const permission = await Notification.requestPermission();
+    const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
 
-      }
+    if (permission === "granted") {
+      await initializeMessaging();
+      if (!messaging) return;
 
-    } catch (err) {
-      console.error("Permission denied or error", err);
+      const token = await getToken(messaging, {
+        vapidKey: "BM71MSQ3H6NRxuMvvPdtWPMtoz_allOynbIWDZeyikouwpmpAVdi29aRpyEYzIHP2KLRp0ttXi7EO3Cj08D-Lz0",
+        serviceWorkerRegistration: swReg,
+      });
+
+      console.log("FCM Token:", token);
+      u['fcmToken'] = token;
+      user.updateProfile(u);
+      await api.put(`/dispatcher/updateFcm/${u?.id}`, { token });
     }
-  };
+  } catch (err) {
+    console.error("Permission denied or error", err);
+  }
+};
+
 
   const handleSignupFinish = () => {
     if (!name) return alert('Enter your name');

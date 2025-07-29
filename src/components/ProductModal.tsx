@@ -23,23 +23,23 @@ import API from '@/api';
 import { useUser } from '@/contexts/UserContext';
 
 type ProductItem = {
-    id: number;
-    title: string;
-    oldPrice: string;
-    price: number;
-    image: string;
-    type: string;
-    place: any;
-    rate: number;
-    discount: string;
-    description: string;
-    images: string[];
-    like: number;
-    comment: number;
-    photoDataUrl: string;
-    view: number;
-    counter: number;
-    yourRating: number;
+    id?: number;
+    title?: string;
+    oldPrice?: string;
+    price?: number;
+    image?: string;
+    type?: string;
+    place?: any;
+    rate?: number;
+    discount?: string;
+    description?: string;
+    images?: string[];
+    like?: number;
+    comment?: number;
+    photoDataUrl?: string;
+    view?: number;
+    counter?: number;
+    yourRating?: number;
 };
 
 type ProductModalProps = {
@@ -92,7 +92,10 @@ const ProductModal: React.FC<ProductModalProps> = ({
     const router = useRouter();
     const api = API();
     const user = useUser();
-    const total = (price * quantity).toFixed(2);
+
+    let total = '';
+    if (price)
+        total = (price * quantity).toFixed(2);
 
     const [sliderRef] = useKeenSlider<HTMLDivElement>({
         loop: true,
@@ -168,11 +171,15 @@ const ProductModal: React.FC<ProductModalProps> = ({
     };
 
     useEffect(() => {
-        setYourRate(yourRating);
-        setRating(rate);
-        setAllImages([photoDataUrl]);
-        setTotalView(view)
-        if (open && images?.length > 0) {
+        if (yourRating)
+            setYourRate(yourRating);
+        if (rate)
+            setRating(rate);
+        if (photoDataUrl)
+            setAllImages([photoDataUrl]);
+        if (view)
+            setTotalView(view)
+        if (open && images && images?.length > 0) {
             const fetchAllImages = async () => {
                 try {
                     const temp = await Promise.all(
@@ -183,7 +190,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
                             return URL.createObjectURL(fileRes);
                         })
                     );
-                    setAllImages([photoDataUrl, ...temp]);
+                    if (photoDataUrl)
+                        setAllImages([photoDataUrl, ...temp]);
                 } catch (error) {
                     console.error("Failed to fetch images", error);
                 }
@@ -245,7 +253,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                         className="keen-slider"
                         sx={{
                             height: viewerHeight,
-        transition: 'height 0.4s ease-in-out',
+                            transition: 'height 0.4s ease-in-out',
                             backgroundColor: '#000',
                             borderTopLeftRadius: '20px',
                             borderTopRightRadius: '20px',
@@ -322,7 +330,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
                                         <Button size="small" variant="outlined" onClick={() => {
                                             setShowCommentInput(false);
                                             setPendingRating(null);
-                                            setYourRate(yourRating);
+                                            if (yourRating)
+                                                setYourRate(yourRating);
                                             setCommentInput('');
                                         }}>Cancel</Button>
                                         <Button size="small" variant="contained" onClick={() => {

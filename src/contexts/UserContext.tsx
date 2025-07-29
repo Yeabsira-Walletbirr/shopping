@@ -1,7 +1,8 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { messaging } from '@/utils/firebase';
+import { messaging, initializeMessaging } from '@/utils/firebase';
+
 import { getToken, onMessage } from "firebase/messaging";
 import API from '@/api';
 
@@ -35,25 +36,33 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       const storedUser = localStorage.getItem('user');
       if (storedUser) {
         const permission = await Notification.requestPermission();
+
         const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+
         if (permission === "granted") {
-          const token = await getToken(messaging, {
-            vapidKey: "BM71MSQ3H6NRxuMvvPdtWPMtoz_allOynbIWDZeyikouwpmpAVdi29aRpyEYzIHP2KLRp0ttXi7EO3Cj08D-Lz0", // From Firebase Console
-            serviceWorkerRegistration: swReg,
-          });
-          console.log("FCM Token:", token);
-          const u = JSON.parse(storedUser)
-          u['fcmToken'] = token
-          setUser(u);
-          await api.put(`/dispatcher/updateFcm/${u?.id}`,{token})
+          await initializeMessaging(); // Ensure messaging is available
+
+          if (messaging) {
+            const token = await getToken(messaging, {
+              vapidKey: "BM71MSQ3H6NRxuMvvPdtWPMtoz_allOynbIWDZeyikouwpmpAVdi29aRpyEYzIHP2KLRp0ttXi7EO3Cj08D-Lz0",
+              serviceWorkerRegistration: swReg,
+            });
+
+            console.log("FCM Token:", token);
+            const u = JSON.parse(storedUser);
+            u['fcmToken'] = token;
+            setUser(u);
+            await api.put(`/dispatcher/updateFcm/${u?.id}`, { token });
+          } else {
+            console.warn("Firebase messaging not supported");
+          }
         }
-
       }
-
     } catch (err) {
       console.error("Permission denied or error", err);
     }
   };
+
 
   // Load user from localStorage on first render
   useEffect(() => {

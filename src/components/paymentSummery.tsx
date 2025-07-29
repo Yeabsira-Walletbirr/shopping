@@ -163,7 +163,7 @@ const PriceSummary = ({ id, quantity, deliveryFee = 35, otherFees = 0, placeId }
                         📍 {location?.address || 'Detecting...'}
                     </Typography>
                 ) : (
-                    <GooglePlacesAutocomplete onSelect={(loc) => setLocation(loc)} />
+                    <GooglePlacesAutocomplete onSelect={(loc:any) => setLocation(loc)} />
                 )}
 
                 <Button

@@ -16,30 +16,17 @@ import {
     FormControlLabel,
     Radio,
 } from '@mui/material';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
-import { useKeenSlider } from 'keen-slider/react';
 import 'keen-slider/keen-slider.min.css';
 import { ArrowBack, Comment, DeliveryDining, LocationPin, ShoppingBag, Star, ThumbUp, Watch, WatchOutlined } from '@mui/icons-material';
-import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
+
 import CircleIcon from '@mui/icons-material/Circle';
 import { useRouter } from 'next/navigation';
 
-import { AddShoppingCart, RemoveShoppingCart } from '@mui/icons-material';
 import AddFoodToCartCard from '@/components/AddFoodToCart';
-import { homeData } from '@/data/home';
 import API from '@/api'
-import ProtectedRoute from '@/utils/protector';
-const images = [
-    '/kitfo.jpeg',
-    '/kurt.jpg',
-    '/kitfo.jpeg'
-];
 
-
-const PlaceCard = ({ params }) => {
-    const { slug } = React.use(params)
+const PlaceCard = ({ params }:any) => {
+    const { slug }:any = React.use(params)
     const api = API()
 
     const [viewerHeight, setViewerHeight] = useState(250);
@@ -59,9 +46,9 @@ const PlaceCard = ({ params }) => {
     const tabRef = useRef<HTMLDivElement>(null);
     const [tabReachedTop, setTabReachedTop] = useState(false);
 
-    const [place, setPlace] = useState()
-    const [products, setProducts] = useState([])
-    const [totalPages, setTotalPages] = useState(1)
+    const [place, setPlace]:any = useState()
+    const [products, setProducts]:any = useState([])
+    const [totalPages, setTotalPages]:any = useState(1)
     const [page, setPage] = useState(0)
     const scrollRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
@@ -80,7 +67,7 @@ const PlaceCard = ({ params }) => {
                 ...payload
             })
             const newProducts = await getPhoto(res);
-            setProducts(prev =>
+            setProducts((prev: any) =>
                 append ? [...prev, ...newProducts] : newProducts
             );
             setTotalPages(res.totalPages || 1);
@@ -367,7 +354,7 @@ const PlaceCard = ({ params }) => {
                     onScroll={handleScroll}
                     sx={{ height: '66vh', overflowY: 'auto', px: 2 }}
                 >
-                    {products?.map((product, i) => (
+                    {products?.map((product:any, i:any) => (
                         <Box key={i}>
                             <AddFoodToCartCard {...product} />
                         </Box>

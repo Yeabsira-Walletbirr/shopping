@@ -3,13 +3,13 @@ import { Button, Input, Typography, Box, CircularProgress } from '@mui/material'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import API from '@/api';
 
-const FileUpload = ({onUploadSuccess, label}) => {
+const FileUpload = ({onUploadSuccess, label}:any) => {
   const api = API()
-    const [file, setFile] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [response, setResponse] = useState(null);
-    const [error, setError] = useState(null);
-    const [imageUrl, setImageUrl] = useState();
+    const [file, setFile]:any = useState(null);
+    const [loading, setLoading]:any = useState(false);
+    const [response, setResponse]:any = useState(null);
+    const [error, setError]:any = useState(null);
+    const [imageUrl, setImageUrl]:any = useState();
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -60,7 +60,7 @@ const FileUpload = ({onUploadSuccess, label}) => {
     return (
         <Box className="file-upload-container" sx={{  p: 2 }}>
             <Input
-                accept="*"
+                // accept="*"
                 type="file"
                 id="file-input"
                 onChange={handleFileChange}

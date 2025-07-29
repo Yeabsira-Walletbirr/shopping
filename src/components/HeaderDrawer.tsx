@@ -22,8 +22,9 @@ import SearchIcon from '@mui/icons-material/SearchOutlined';
 import { History, Home, Login, Logout, MaleOutlined, Man2, ManOutlined, ShoppingCart, Store } from '@mui/icons-material';
 import { usePathname, useRouter } from 'next/navigation';
 import { useUser } from '@/contexts/UserContext';
-   import { messaging } from '@/utils/firebase';
-    import { getToken, onMessage } from "firebase/messaging";
+import { messaging, initializeMessaging } from '@/utils/firebase';
+import { getToken, onMessage } from "firebase/messaging";
+
 
 // const navItems = ['Home', 'Shop', 'Contact'];
 
@@ -57,21 +58,37 @@ const TransparentResponsiveHeader = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [isMobile]);
 
+    
     const requestPermission = async () => {
-        try {
-            const permission = await Notification.requestPermission();
-            const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
-            if (permission === "granted") {
-                const token = await getToken(messaging, {
-                    vapidKey: "BM71MSQ3H6NRxuMvvPdtWPMtoz_allOynbIWDZeyikouwpmpAVdi29aRpyEYzIHP2KLRp0ttXi7EO3Cj08D-Lz0", // From Firebase Console
-                    serviceWorkerRegistration: swReg,
-                });
-                console.log("FCM Token:", token);
-            }
-        } catch (err) {
-            console.error("Permission denied or error", err);
+  try {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const permission = await Notification.requestPermission();
+
+      const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+
+      if (permission === "granted") {
+        await initializeMessaging(); // Ensure messaging is available
+
+        if (messaging) {
+          const token = await getToken(messaging, {
+            vapidKey: "BM71MSQ3H6NRxuMvvPdtWPMtoz_allOynbIWDZeyikouwpmpAVdi29aRpyEYzIHP2KLRp0ttXi7EO3Cj08D-Lz0",
+            serviceWorkerRegistration: swReg,
+          });
+
+          console.log("FCM Token:", token);
+
+        } else {
+          console.warn("Firebase messaging not supported");
         }
-    };
+      }
+    }
+  } catch (err) {
+    console.error("Permission denied or error", err);
+  }
+};
+
+
 
     useEffect(() => {
         requestPermission()

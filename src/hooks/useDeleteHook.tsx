@@ -8,7 +8,7 @@ const useDeleteHook = () => {
   const api = API();
   const [error, setError] = useState(null);
 
-  const handleDelete = async (url, id) => {
+  const handleDelete = async (url:any, id:any) => {
     const headers = {
       'Authorization': `Bearer ${localStorage.getItem('token')}`,
       // 'Content-Type': 'application/json',
@@ -22,8 +22,8 @@ const useDeleteHook = () => {
         // Navigate after successful deletion
         router.push(window.location.pathname.replace(/\/view\/.*/, ''));
       }
-    } catch (err) {
-      setError(e)
+    } catch (err:any) {
+      setError(err)
     } finally {
       setLoading(false);
     }

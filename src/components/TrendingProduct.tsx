@@ -8,21 +8,23 @@ import { useState } from "react";
 import ProductModal from "./ProductModal";
 import { ShoppingCart } from "@mui/icons-material";
 type TrendingProductItem = {
-    id: number,
-    name: string,
-    oldPrice: string,
-    price: string,
-    image: string,
-    type: string,
-    place: string,
-    rate: number,
-    discount: string,
-    description: string,
-    like:number,
-    comment:number,
-    view:number,
-    images: [],
-    counter:number
+    id?: any,
+    name?: any,
+    oldPrice?: any,
+    price?: any,
+    image?: any,
+    type?: any,
+    place?: any,
+    rate?: any,
+    discount?: any,
+    description?: any,
+    like?:any,
+    comment?:any,
+    view?:any,
+    images?: [],
+    counter?:any,
+    photoDataUrl?:any,
+    title?:any
 };
 const TrendingProduct = (trendingproductItem: TrendingProductItem) => {
     const router = useRouter()

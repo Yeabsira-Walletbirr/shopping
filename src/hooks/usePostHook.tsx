@@ -8,14 +8,14 @@ const usePostHook = () => {
   const api = API();
   const router = useRouter();
 
-  const handlePost = async (url, payload) => {
+  const handlePost = async (url:any, payload:any) => {
     setLoading(true);
     try {
       const response = await api.post(url, payload);
       if (response?.status == 200) {
         router.push(window.location.pathname.replace('add', ''));
       }
-    } catch (err) {
+    } catch (err:any) {
       setError(err);
     } finally {
       setLoading(false);

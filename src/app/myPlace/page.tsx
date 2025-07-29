@@ -18,7 +18,7 @@ import { Add } from '@mui/icons-material';
 import ProtectedRoute from '@/utils/protector';
 
 export default function PlaceList() {
-    const [places, setPlaces] = useState([]);
+    const [places, setPlaces]:any = useState([]);
     const [loading, setLoading] = useState(false);
     const api = API();
     const router = useRouter();
@@ -34,7 +34,7 @@ export default function PlaceList() {
                 const data = await api.get(`/place/user/${user.id}`);
 
                 const placesWithPhotos = await Promise.all(
-                    data.map(async (place) => {
+                    data.map(async (place:any) => {
                         if (place.photo) {
                             try {
                                 const res = await api.get(`/files/view/${place.photo}`, null, {
@@ -70,7 +70,7 @@ export default function PlaceList() {
                 {loading ? (
                     <CircularProgress />
                 ) : (
-                    places.map((place) => (
+                    places.map((place:any) => (
                         <Card key={place.id} onClick={() => router.push(`/myPlace/view/${place.id}`)} sx={{ cursor: 'pointer', display: 'flex' }}>
                             {place.photoDataUrl && (
                                 <CardMedia
