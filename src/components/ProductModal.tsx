@@ -335,8 +335,11 @@ const ProductModal: React.FC<ProductModalProps> = ({
                                             setCommentInput('');
                                         }}>Cancel</Button>
                                         <Button size="small" variant="contained" onClick={() => {
-                                            if (pendingRating !== null) {
+                                            if (user.isAuthenticated && pendingRating !== null) {
                                                 rateProduct(pendingRating, commentInput);
+                                            }
+                                            else{
+                                                router.push('/auth')
                                             }
                                             setShowCommentInput(false);
                                             setCommentInput('');

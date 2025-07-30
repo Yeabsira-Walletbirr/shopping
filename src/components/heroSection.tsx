@@ -6,6 +6,7 @@ import {
     Tabs,
     Tab,
     Divider,
+    CircularProgress,
 } from '@mui/material';
 import { homeData } from '@/data/home'
 import { useEffect, useRef, useState } from 'react';
@@ -26,6 +27,9 @@ const categories = [
 ];
 
 export default function HeroSection() {
+    const [loading, setLoading] = useState(true)
+    const [loading2, setLoading2] = useState(true)
+    const [loading3, setLoading3] = useState(true)
     const [tabIndex, setTabIndex]: any = useState(0);
     const scrollRef = useRef<HTMLDivElement>(null);
     const scrollRef1 = useRef<HTMLDivElement>(null);
@@ -60,6 +64,8 @@ export default function HeroSection() {
                         console.error('Photo load error:', err);
                         return { ...p, photoDataUrl: null };
                     }
+                    finally {
+                    }
                 }
                 return { ...p, photoDataUrl: null };
             })
@@ -68,6 +74,7 @@ export default function HeroSection() {
 
     const fetchProducts = async (pageNumber = 0, append = false) => {
         try {
+            setLoading(true)
             const res = await api.get('/product', {
                 page: pageNumber,
                 size: 10,
@@ -82,10 +89,14 @@ export default function HeroSection() {
         } catch (err) {
             console.error("Failed to load products");
         }
+        finally {
+            setLoading(false)
+        }
     };
 
     const fetchTrending = async (pageNumber = 0, append = false) => {
         try {
+            setLoading2(true)
             const res2 = await api.get('/product/trending', {
                 page: pageNumber,
                 size: 10,
@@ -100,6 +111,9 @@ export default function HeroSection() {
         } catch (err) {
             console.error("Failed to load trending products");
         }
+        finally {
+            setLoading2(false)
+        }
     };
 
 
@@ -109,9 +123,7 @@ export default function HeroSection() {
 
     const fetchPlaces = async (pageNumber = 0, append = false) => {
         try {
-            // const jsonUser = localStorage.getItem('user');
-            // if (!jsonUser) return;
-
+            setLoading3(true)
             const data = await api.get(`/place/byProductType`, {
                 page: pageNumber,
                 size: 10,
@@ -146,6 +158,7 @@ export default function HeroSection() {
         } catch (e) {
             console.error('Error fetching places:', e);
         } finally {
+            setLoading3(false)
         }
     };
 
@@ -198,12 +211,17 @@ export default function HeroSection() {
                     scrollButtons="auto"
                 >
                     {categories.map((cat) => (
-                        <Tab key={cat.value} label={cat.name} sx={{ textTransform: 'none' }} />
+                        <Tab disabled={loading || loading2 || loading3} key={cat.value} label={cat.name} sx={{ textTransform: 'none' }} />
                     ))}
                 </Tabs>
             </Box>
 
-            {
+
+            {loading && loading2 && loading3 ? (
+                <Box height="82vh" display="flex" alignItems="center" justifyContent="center">
+                    <CircularProgress />
+                </Box>
+            ) : (
                 (products?.length > 0 || trendingProducts?.length > 0 || places?.length > 0) ?
                     <>
                         <Box sx={{ px: 1 }}>
@@ -212,9 +230,11 @@ export default function HeroSection() {
                                 sx={{ display: 'flex', overflowX: 'auto', pb: 1, scrollbarWidth: 'none' }}
                                 onScroll={handleScroll}
                             >
-                                {products?.map((p:any) => (
+                                {products?.map((p: any) => (
                                     <Box key={p.id}><Product {...p} /></Box>
                                 ))}
+                                {loading && <CircularProgress />}
+
                             </Box>
                         </Box>
                         {trendingProducts?.length > 0 &&
@@ -229,9 +249,11 @@ export default function HeroSection() {
                                         sx={{ display: 'flex', overflowX: 'auto', pb: 2, scrollbarWidth: 'none' }}
                                         onScroll={handleScrollTrending}
                                     >
-                                        {trendingProducts?.map((p:any) => (
+                                        {trendingProducts?.map((p: any) => (
                                             <Box sx={{ padding: 1 }} key={p.id}><TrendingProduct {...p} /></Box>
                                         ))}
+                                        {loading2 && <CircularProgress />}
+
                                     </Box>
                                 </Box>
                             </>
@@ -244,10 +266,12 @@ export default function HeroSection() {
                                     <Typography variant="h6" fontWeight="bold" gutterBottom>
                                         Nearby Places
                                     </Typography>
-                                    {places?.map((p:any) => (
+                                    {places?.map((p: any) => (
                                         // console.log(p)
                                         <Box sx={{ p: 1 }} key={p.id}><Place {...p} /></Box>
                                     ))}
+                                    {loading3 && <CircularProgress />}
+
                                 </Box>
                             </>
                         }
@@ -257,7 +281,9 @@ export default function HeroSection() {
                     <Typography height={'82vh'} sx={{ alignContent: 'center', justifySelf: 'center' }}>
                         No content available
                     </Typography>
+            )
             }
+
         </Box>
     );
 }
