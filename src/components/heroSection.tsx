@@ -217,7 +217,7 @@ export default function HeroSection() {
             </Box>
 
 
-            {loading && loading2 && loading3 ? (
+            {loading || loading2 || loading3 ? (
                 <Box height="82vh" display="flex" alignItems="center" justifyContent="center">
                     <CircularProgress />
                 </Box>
