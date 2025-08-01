@@ -20,10 +20,26 @@ import { useRouter } from "next/navigation";
 import ProtectedRoute from "@/utils/protector";
 import GooglePlacesAutocomplete from "@/components/GoogleAutocomplete";
 
-const DELIVERY_FEE = 35;
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+import { TransitionProps } from '@mui/material/transitions';
 
-const Checkout = ({params}:any ) => {
-    const { slug }:any = React.use(params);
+const DELIVERY_FEE = 35;
+const Transition = React.forwardRef(function Transition(
+    props: TransitionProps & {
+        children: React.ReactElement<any, any>;
+    },
+    ref: React.Ref<unknown>,
+) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
+
+const Checkout = ({ params }: any) => {
+    const { slug }: any = React.use(params);
     const { cartItemsByPlace, getTotalPrice } = useCart();
     const [products, setProducts] = useState<any[]>([]);
     const [total, setTotal] = useState(0);
@@ -32,6 +48,9 @@ const Checkout = ({params}:any ) => {
     const [loadingLocation, setLoadingLocation] = useState(false);
     const api = API();
     const router = useRouter();
+
+    const [open, setOpen] = useState(false)
+
 
     const fetchData = async () => {
         try {
@@ -97,6 +116,10 @@ const Checkout = ({params}:any ) => {
         // You can build payload and call your order API here
         console.log("Order confirmed with location:", location);
     };
+    const handleClose=()=>{
+        router.push('/')
+    }
+
 
     return (
         <ProtectedRoute>
@@ -176,7 +199,7 @@ const Checkout = ({params}:any ) => {
                                 📍 {location?.address || "Fetching location..."}
                             </Typography>
                         ) : (
-                            <GooglePlacesAutocomplete onSelect={(loc:any) => setLocation(loc)} />
+                            <GooglePlacesAutocomplete onSelect={(loc: any) => setLocation(loc)} />
                         )}
 
                         <Button
@@ -191,6 +214,24 @@ const Checkout = ({params}:any ) => {
                         </Button>
                     </Stack>
                 </Paper>
+                <Dialog
+                    open={open}
+                    slots={{
+                        transition: Transition,
+                    }}
+                    keepMounted
+                    aria-describedby="alert-dialog-slide-description"
+                >
+                    <DialogTitle>Order Placed successfully</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            Your order has been sent.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>OK</Button>
+                    </DialogActions>
+                </Dialog>
             </Box>
         </ProtectedRoute>
     );

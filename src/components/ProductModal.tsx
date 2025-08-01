@@ -9,6 +9,7 @@ import {
     Rating,
     Slide,
     Stack,
+    CircularProgress,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -88,6 +89,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
 
+    const [showImages, setShowImages] = useState(false)
+
     const scrollRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const api = API();
@@ -120,9 +123,15 @@ const ProductModal: React.FC<ProductModalProps> = ({
         startY.current = null;
     };
 
+    const close=()=>{
+        setShowImages(false)
+
+    }
     const handleClose = () => {
+        setOpen(false)
         setShowContent(false);
-        setTimeout(() => setOpen(false), 300);
+        setTimeout(() => close(), 300);
+
     };
 
     const rateProduct = async (r: number, comment: string) => {
@@ -192,11 +201,16 @@ const ProductModal: React.FC<ProductModalProps> = ({
                     );
                     if (photoDataUrl)
                         setAllImages([photoDataUrl, ...temp]);
+                    setShowImages(true)
+
                 } catch (error) {
                     console.error("Failed to fetch images", error);
                 }
             };
             fetchAllImages();
+        }else{
+                    setShowImages(true)
+
         }
         if (open) {
             countView()
@@ -248,48 +262,68 @@ const ProductModal: React.FC<ProductModalProps> = ({
                     overflowY: 'auto',
                     maxHeight: '100vh',
                 }}>
-                    <Box
-                        ref={sliderRef}
-                        className="keen-slider"
-                        sx={{
-                            height: viewerHeight,
-                            transition: 'height 0.4s ease-in-out',
-                            backgroundColor: '#000',
-                            borderTopLeftRadius: '20px',
-                            borderTopRightRadius: '20px',
-                            overflow: 'hidden',
-                        }}
-                    >
-                        {allImages.map((img, idx) => (
-                            <Box
-                                key={idx}
-                                className="keen-slider__slide"
-                                component="img"
-                                src={img}
-                                alt={`product-image-${idx}`}
-                                onClick={() => setViewerHeight(viewerHeight === 500 ? 250 : 500)}
-                                sx={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover',
-                                    cursor: 'pointer',
-                                }}
-                            />
-                        ))}
-                    </Box>
+                    {showImages ?
+                        <>
 
-                    <Box sx={{ textAlign: 'center', mt: 1 }}>
-                        {allImages.map((_, idx) => (
-                            <Box key={idx} component="span" sx={{
-                                display: 'inline-block',
-                                width: 10,
-                                height: 10,
-                                mx: 0.5,
-                                borderRadius: '50%',
-                                backgroundColor: idx === currentSlide ? 'primary.main' : 'grey.400',
-                            }} />
-                        ))}
-                    </Box>
+                            <Box
+                                ref={sliderRef}
+                                className="keen-slider"
+                                sx={{
+                                    height: viewerHeight,
+                                    transition: 'height 0.4s ease-in-out',
+                                    backgroundColor: '#000',
+                                    borderTopLeftRadius: '20px',
+                                    borderTopRightRadius: '20px',
+                                    overflow: 'hidden',
+                                }}
+                            >
+                                {allImages.map((img, idx) => (
+                                    <Box
+                                        key={idx}
+                                        className="keen-slider__slide"
+                                        component="img"
+                                        src={img}
+                                        alt={`product-image-${idx}`}
+                                        onClick={() => setViewerHeight(viewerHeight === 500 ? 250 : 500)}
+                                        sx={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover',
+                                            cursor: 'pointer',
+                                        }}
+                                    />
+                                ))}
+                            </Box>
+
+                            <Box sx={{ textAlign: 'center', mt: 1 }}>
+                                {allImages.map((_, idx) => (
+                                    <Box key={idx} component="span" sx={{
+                                        display: 'inline-block',
+                                        width: 10,
+                                        height: 10,
+                                        mx: 0.5,
+                                        borderRadius: '50%',
+                                        backgroundColor: idx === currentSlide ? 'primary.main' : 'grey.400',
+                                    }} />
+                                ))}
+                            </Box>
+                        </> :
+                        <Box
+
+                            sx={{
+                                height: viewerHeight,
+                                transition: 'height 0.4s ease-in-out',
+                                backgroundColor: '#000',
+                                borderTopLeftRadius: '20px',
+                                borderTopRightRadius: '20px',
+                                alignContent:'center',
+                                textAlign:'center',
+                                overflow: 'hidden',
+                            }}
+                        >
+                            <CircularProgress/>
+                        </Box>
+                    }
 
                     {!showComment ? (
                         <Box sx={{ p: { xs: 2, sm: 3 }, minHeight: '40vh' }}>
@@ -338,7 +372,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                                             if (user.isAuthenticated && pendingRating !== null) {
                                                 rateProduct(pendingRating, commentInput);
                                             }
-                                            else{
+                                            else {
                                                 router.push('/auth')
                                             }
                                             setShowCommentInput(false);

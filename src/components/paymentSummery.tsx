@@ -23,21 +23,41 @@ import API from '@/api';
 import { useUser } from '@/contexts/UserContext';
 import GooglePlacesAutocomplete from './GoogleAutocomplete';
 
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
+import { TransitionProps } from '@mui/material/transitions';
+import { useRouter } from 'next/navigation';
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement<any, any>;
+  },
+  ref: React.Ref<unknown>,
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 interface Props {
     id: number;
     quantity: number;
     deliveryFee?: number;
     otherFees?: number;
-    placeId:number
+    placeId: number
 }
 
 const PriceSummary = ({ id, quantity, deliveryFee = 35, otherFees = 0, placeId }: Props) => {
+    const router = useRouter()
     const api = API();
     const [product, setProduct] = useState<any>();
     const [image, setImage] = useState<string>();
     const [locationMode, setLocationMode] = useState<'gps' | 'manual'>('manual');
     const [location, setLocation] = useState<{ address: string; latitude: number; longitude: number } | null>(null);
     const user = useUser();
+    const [open, setOpen] = useState(false)
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -96,13 +116,18 @@ const PriceSummary = ({ id, quantity, deliveryFee = 35, otherFees = 0, placeId }
                 userId: user?.user?.id,
                 placeId,
                 location,
-                token : user?.user?.fcmToken
+                token: user?.user?.fcmToken
             };
             await api.post(`/product/order`, payload);
+            setOpen(true)
+
         } catch (err) {
             console.error('Order failed', err);
         }
     };
+    const handleClose=()=>{
+        router.push('/')
+    }
 
     return (
         <Card elevation={4} sx={{ maxWidth: 400, mx: 'auto', borderRadius: 4, p: 2 }}>
@@ -163,7 +188,7 @@ const PriceSummary = ({ id, quantity, deliveryFee = 35, otherFees = 0, placeId }
                         📍 {location?.address || 'Detecting...'}
                     </Typography>
                 ) : (
-                    <GooglePlacesAutocomplete onSelect={(loc:any) => setLocation(loc)} />
+                    <GooglePlacesAutocomplete onSelect={(loc: any) => setLocation(loc)} />
                 )}
 
                 <Button
@@ -176,6 +201,25 @@ const PriceSummary = ({ id, quantity, deliveryFee = 35, otherFees = 0, placeId }
                 >
                     Order
                 </Button>
+
+                <Dialog
+                    open={open}
+                    slots={{
+                        transition: Transition,
+                    }}
+                    keepMounted
+                    aria-describedby="alert-dialog-slide-description"
+                >
+                    <DialogTitle>Order Placed successfully</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            Your order has been sent.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>OK</Button>
+                    </DialogActions>
+                </Dialog>
             </CardContent>
         </Card>
     );
