@@ -7,6 +7,7 @@ import TransparentResponsiveHeader from "@/components/HeaderDrawer";
 import { Box } from "@mui/material";
 import { UserProvider } from "@/contexts/UserContext";
 import { MapProvider } from "@/contexts/MapContext";
+import { LocationProvider } from "@/contexts/LocationContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,18 +39,15 @@ export default function RootLayout({
           <CartProvider>
             <TransparentResponsiveHeader />
             <MapProvider>
-              <Box paddingTop={8}>
-                {children}
-              </Box>
+              <LocationProvider>
+                <Box paddingTop={8}>
+                  {children}
+                </Box>
+              </LocationProvider>
             </MapProvider>
-
-
             <YourCartButton />
-
           </CartProvider>
         </UserProvider>
-
-
       </body>
     </html>
   );

@@ -13,7 +13,7 @@ interface User {
   email: string | null;
   phoneNumber: string;
   token: string;
-  fcmToken: string
+  fcmToken: string,
 }
 
 interface UserContextType {

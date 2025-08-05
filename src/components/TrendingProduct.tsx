@@ -6,7 +6,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 
 import { useState } from "react";
 import ProductModal from "./ProductModal";
-import { ShoppingCart } from "@mui/icons-material";
+import { ShoppingCart, Star } from "@mui/icons-material";
 type TrendingProductItem = {
     id?: any,
     name?: any,
@@ -15,7 +15,7 @@ type TrendingProductItem = {
     image?: any,
     type?: any,
     place?: any,
-    rate?: any,
+    rating?: any,
     discount?: any,
     description?: any,
     like?:any,
@@ -87,10 +87,6 @@ const TrendingProduct = (trendingproductItem: TrendingProductItem) => {
                             <Typography fontSize={11}>{trendingproductItem?.view}</Typography>
                         </Stack>
                         <Stack direction="row" spacing={0.5} alignItems="center">
-                            <FavoriteBorderIcon sx={{ fontSize: 14 }} />
-                            <Typography fontSize={11}>{trendingproductItem?.like}</Typography>
-                        </Stack>
-                        <Stack direction="row" spacing={0.5} alignItems="center">
                             <ChatBubbleOutlineIcon sx={{ fontSize: 14 }} />
                             <Typography fontSize={11}>{trendingproductItem?.comment}</Typography>
                         </Stack>
@@ -98,6 +94,10 @@ const TrendingProduct = (trendingproductItem: TrendingProductItem) => {
                             <ShoppingCart sx={{ fontSize: 14 }} />
                             <Typography fontSize={11}>{trendingproductItem?.counter}</Typography>
                         </Stack>
+                        { trendingproductItem?.rating && <Stack direction="row" spacing={0.5} alignItems="center">
+                            <Star sx={{ fontSize: 14, color:'orange' }} />
+                            <Typography fontSize={11}>{trendingproductItem?.rating}</Typography>
+                        </Stack>}
                     </Stack>
 
                     <Typography fontWeight="bold" fontSize={13}>

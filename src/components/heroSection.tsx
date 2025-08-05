@@ -15,6 +15,9 @@ import Place from './Place';
 import Product from './Product';
 import API from '@/api'
 
+import { useLocation } from '@/contexts/LocationContext'; // update path as needed
+
+
 const categories = [
     { name: 'Food', value: "FOOD" },
     { name: 'Grocery', value: 'GROCERY' },
@@ -34,6 +37,8 @@ export default function HeroSection() {
     const scrollRef = useRef<HTMLDivElement>(null);
     const scrollRef1 = useRef<HTMLDivElement>(null);
     const scrollRef2 = useRef<HTMLDivElement>(null);
+     const { latitude, setLatitude, longitude, setLongitude } = useLocation();
+
 
     const api = API();
 
@@ -78,7 +83,9 @@ export default function HeroSection() {
             const res = await api.get('/product', {
                 page: pageNumber,
                 size: 10,
-                productType: type
+                productType: type,
+                latitude: latitude,
+                longitude:longitude
             });
             const newProducts = await getPhoto(res);
             setProducts((prev: any) =>
@@ -97,10 +104,12 @@ export default function HeroSection() {
     const fetchTrending = async (pageNumber = 0, append = false) => {
         try {
             setLoading2(true)
-            const res2 = await api.get('/product/trending', {
+            const res2 = await api.get(`/product/trending`, {
                 page: pageNumber,
                 size: 10,
-                productType: type
+                productType: type,
+                latitude: latitude,
+                longitude:longitude
             });
             const newTrending = await getPhoto(res2);
             setTrendingProducts((prev: any) =>
@@ -124,10 +133,12 @@ export default function HeroSection() {
     const fetchPlaces = async (pageNumber = 0, append = false) => {
         try {
             setLoading3(true)
-            const data = await api.get(`/place/byProductType`, {
+            const data = await api.get(`/place/getNearByPlaces`, {
                 page: pageNumber,
                 size: 10,
-                productType: type
+                productType: type,
+                latitude: latitude,
+                longitude:longitude
             });
 
             const placesWithPhotos = await Promise.all(
@@ -182,7 +193,7 @@ export default function HeroSection() {
         fetchProducts();
         fetchTrending();
         fetchPlaces()
-    }, [type]);
+    }, [type, latitude]);
 
     return (
 

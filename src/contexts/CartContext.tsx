@@ -1,11 +1,10 @@
 'use client';
-// import { products } from '@/data/products';
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type CartItem = {
     id: number;
     quantity: number;
-    placeId: number; // or storeId
+    placeId: number;
     price: number;
 };
 
@@ -61,11 +60,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
    const deleteFromCart = (id: number, placeId: number) => {
     setCartItemsByPlace(prev => {
         const current = prev[placeId];
-        if (!current) return prev; // No items to delete
-
+        if (!current) return prev;
         const updated = current.filter(i => i.id !== id);
-        
-        // Optionally remove the entire placeId key if empty
         if (updated.length === 0) {
             const { [placeId]: _, ...rest } = prev;
             return rest;

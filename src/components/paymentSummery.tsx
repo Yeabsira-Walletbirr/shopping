@@ -58,6 +58,7 @@ const PriceSummary = ({ id, quantity, deliveryFee = 35, otherFees = 0, placeId }
     const [location, setLocation] = useState<{ address: string; latitude: number; longitude: number } | null>(null);
     const user = useUser();
     const [open, setOpen] = useState(false)
+    const [response, setResponse] = useState("");
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -118,7 +119,8 @@ const PriceSummary = ({ id, quantity, deliveryFee = 35, otherFees = 0, placeId }
                 location,
                 token: user?.user?.fcmToken
             };
-            await api.post(`/product/order`, payload);
+            const res = await api.post(`/product/order`, payload);
+            setResponse(res)
             setOpen(true)
 
         } catch (err) {
@@ -210,10 +212,10 @@ const PriceSummary = ({ id, quantity, deliveryFee = 35, otherFees = 0, placeId }
                     keepMounted
                     aria-describedby="alert-dialog-slide-description"
                 >
-                    <DialogTitle>Order Placed successfully</DialogTitle>
+                    <DialogTitle>Order Status</DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-slide-description">
-                            Your order has been sent.
+                            {response}
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>

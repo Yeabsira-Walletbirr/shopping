@@ -9,14 +9,14 @@ import {
     CardMedia,
 } from '@mui/material';
 import 'keen-slider/keen-slider.min.css';
-import { Close, Comment, Star, ThumbUp } from '@mui/icons-material';
+import { Close, Comment, Star, ThumbUp, Visibility } from '@mui/icons-material';
 import { AddShoppingCart, RemoveShoppingCart } from '@mui/icons-material';
 import { useCart } from '@/contexts/CartContext';
 
 type AddFoodToCartCardProps = {
     id: number;
     title: string;
-    like: string;
+    view: number;
     comment: string;
     image: string;
     rate: string;
@@ -29,7 +29,7 @@ type AddFoodToCartCardProps = {
 const AddFoodToCartCard = ({
     id,
     title,
-    like,
+    view,
     comment,
     image,
     rate,
@@ -80,8 +80,8 @@ const AddFoodToCartCard = ({
                 </Box>
                 <Stack direction="row" spacing={1} mb={1}>
                     <Stack direction="row" spacing={0.5} alignItems="center">
-                        <ThumbUp sx={{ fontSize: 14 }} />
-                        <Typography fontSize={11}>{like}</Typography>
+                        <Visibility sx={{ fontSize: 14 }} />
+                        <Typography fontSize={11}>{view}</Typography>
                     </Stack>
                     <Stack direction="row" spacing={0.5} alignItems="center">
                         <Comment sx={{ fontSize: 14 }} />

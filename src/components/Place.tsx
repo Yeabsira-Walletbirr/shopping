@@ -12,7 +12,8 @@ type PlaceItem = {
     latitude: number,
     longitude: number,
     productTypes: any,
-    photoDataUrl: any
+    photoDataUrl: any,
+    distance:any
 };
 const Place = (placeItem: PlaceItem) => {
     const router = useRouter()
@@ -48,7 +49,7 @@ const Place = (placeItem: PlaceItem) => {
                 <Stack direction="row" spacing={1} mb={1}>
                     <Stack direction="row" spacing={0.5} alignItems="center">
                         <StraightenIcon sx={{ fontSize: 14 }} />
-                        <Typography fontSize={11}>100M</Typography>
+                        <Typography fontSize={11}>{placeItem?.distance?.toFixed(2)} KM</Typography>
                     </Stack>
                     <Stack direction="row" spacing={0.5} alignItems="center">
                         <AccessTimeIcon sx={{ fontSize: 14 }} />
