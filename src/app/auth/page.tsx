@@ -80,8 +80,8 @@ export default function PhoneAuth() {
     if (!otp) return alert('Enter OTP');
     try {
       const res = await api.authenticate('/auth/verify', { identifier: phone, otp: otp })
-      requestPermission(res)
       user.login(res)
+      requestPermission(res)
       router.push('/')
     }
     catch (e) {
@@ -103,7 +103,8 @@ export default function PhoneAuth() {
         serviceWorkerRegistration: swReg,
       });
 
-      console.log("FCM Token:", token);
+      
+      console.log("FCM Token:", u);
       u['fcmToken'] = token;
       user.updateProfile(u);
       await api.put(`/dispatcher/updateFcm/${u?.id}`, { token });

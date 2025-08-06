@@ -21,7 +21,7 @@ interface UserContextType {
   isAuthenticated: boolean;
   login: (userData: User) => void;
   logout: () => void;
-  updateProfile: (updatedData: Partial<User>) => void;
+  updateProfile: (updatedData: User) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -70,9 +70,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = (userData: User) => {
+    console.log(userData)
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', userData.token); // Optional if used elsewhere
+    localStorage.setItem('token', userData.token);
   };
 
   const logout = () => {
@@ -83,14 +84,14 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   };
 
-  const updateProfile = (updatedData: Partial<User>) => {
+  const updateProfile = (updatedData: User) => {
     if (user) {
       const updatedUser = { ...user, ...updatedData };
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
     }else{
-      setUser(user)
-      localStorage.setItem('user', JSON.stringify(user));
+      setUser(updatedData)
+      localStorage.setItem('user', JSON.stringify(updatedData));
     }
   };
 
