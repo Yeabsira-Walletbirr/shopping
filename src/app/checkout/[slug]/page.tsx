@@ -27,6 +27,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
+import { useUser } from "@/contexts/UserContext";
 
 const DELIVERY_FEE = 35;
 const Transition = React.forwardRef(function Transition(
@@ -39,6 +40,7 @@ const Transition = React.forwardRef(function Transition(
 });
 
 const Checkout = ({ params }: any) => {
+    const user = useUser()
     const { slug }: any = React.use(params);
     const { cartItemsByPlace, getTotalPrice } = useCart();
     const [products, setProducts] = useState<any[]>([]);
@@ -50,6 +52,7 @@ const Checkout = ({ params }: any) => {
     const router = useRouter();
 
     const [open, setOpen] = useState(false)
+    const [response, setResponse] = useState(false)
 
 
     const fetchData = async () => {
@@ -112,11 +115,29 @@ const Checkout = ({ params }: any) => {
         }
     }, [locationMode]);
 
-    const handleConfirmOrder = () => {
-        // You can build payload and call your order API here
-        console.log("Order confirmed with location:", location);
+    const handleConfirmOrder = async() => {
+        try {
+            const orders = products.map(x => {
+                return {
+                    userId: user.user?.id,
+                    productId: x.id,
+                    placeId: x.place.id,
+                    quantity: x.quantity,
+                    token: user?.user?.fcmToken
+                }
+            })
+            const res = await api.post(`product/bulkOrder`, orders)
+            setResponse(res)
+            setOpen(true)
+        }
+        catch {
+
+        }
+
+
     };
-    const handleClose=()=>{
+    const handleClose = () => {
+        setOpen(false)
         router.push('/')
     }
 
@@ -222,10 +243,10 @@ const Checkout = ({ params }: any) => {
                     keepMounted
                     aria-describedby="alert-dialog-slide-description"
                 >
-                    <DialogTitle>Order Placed successfully</DialogTitle>
+                    <DialogTitle>Order Summery</DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-slide-description">
-                            Your order has been sent.
+                            {response}
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>

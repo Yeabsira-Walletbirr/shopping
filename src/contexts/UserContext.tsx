@@ -88,6 +88,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       const updatedUser = { ...user, ...updatedData };
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
+    }else{
+      setUser(user)
+      localStorage.setItem('user', JSON.stringify(user));
     }
   };
 

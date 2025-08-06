@@ -55,6 +55,7 @@ const useCrudApi = () => {
       });
       return response.data;
     } catch (error: any) {
+      console.log(error)
       if (error.status == 401) {
         localStorage.clear()
         router.push('/auth')

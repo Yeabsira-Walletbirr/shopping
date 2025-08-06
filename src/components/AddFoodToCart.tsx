@@ -121,7 +121,7 @@ const AddFoodToCartCard = ({
             </Box>
             <IconButton
                 sx={{ right: 2, marginBottom: 'auto' }}
-                onClick={() => deleteFromCart(id, place)}
+                onClick={() => deleteFromCart(id, place?.id)}
             >
                 <Close />
             </IconButton>

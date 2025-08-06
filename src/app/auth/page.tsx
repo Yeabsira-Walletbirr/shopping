@@ -8,6 +8,11 @@ import {
   Button,
   Stack,
   Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import usePostHook from '@/hooks/usePostHook';
@@ -26,9 +31,14 @@ export default function PhoneAuth() {
   const [otp, setOtp] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [noUser, setNoUser] = useState(false)
+  const [wrongOtp, setWrongOtp] = useState(false)
+  const [showOTP ,setShowOTP] = useState(false)
 
+  const [yourOTP, setYourOTP] = useState('')
   const api = API()
   const user = useUser()
+  
 
   useEffect(() => {
     console.log(user)
@@ -43,6 +53,8 @@ export default function PhoneAuth() {
     if (isSignup) {
       try {
         const res = await api.authenticate('/auth/signup', { fullName: name, email: email, phone: phone })
+        setYourOTP(res)
+        setShowOTP(true)
         setStep('enterOTP');
 
       }
@@ -53,19 +65,19 @@ export default function PhoneAuth() {
     } else {
       try {
         const res = await api.authenticate('/auth/login', { identifier: phone, method: 'PHONE_NUMBER' })
+         setYourOTP(res)
+        setShowOTP(true)
         setStep('enterOTP');
 
       }
       catch {
-
+        setNoUser(true)
       }
     }
   };
 
   const handleVerifyOTP = async () => {
     if (!otp) return alert('Enter OTP');
-    // Simulate OTP check
-
     try {
       const res = await api.authenticate('/auth/verify', { identifier: phone, otp: otp })
       requestPermission(res)
@@ -73,15 +85,12 @@ export default function PhoneAuth() {
       router.push('/')
     }
     catch (e) {
-      console.log(e)
+      setWrongOtp(true)
     }
   };
 
   const requestPermission = async (u:any) => {
   try {
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) return;
-
     const permission = await Notification.requestPermission();
     const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
 
@@ -229,66 +238,70 @@ export default function PhoneAuth() {
               </Stack>
             )}
           </>
-
         }
-
-        {/* {step === 'enterPhone' && (
-          <Stack spacing={2}>
-            <TextField
-              label="Phone Number"
-              placeholder="+251 912 345 678"
-              fullWidth
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-            <Button sx={{ backgroundColor: 'orange' }} variant="contained" fullWidth onClick={handleSendOTP}>
-              Send OTP
-            </Button>
-          </Stack>
-        )}
-
-        {step === 'enterOTP' && (
-          <Stack spacing={2}>
-            <TextField
-              label="OTP Code"
-              placeholder="123456"
-              fullWidth
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-            />
-            <Button sx={{ backgroundColor: 'orange' }} variant="contained" fullWidth onClick={handleVerifyOTP}>
-              Verify OTP
-            </Button>
-          </Stack>
-        )}
-
-        {step === 'enterName' && isSignup && (
-          <Stack spacing={2}>
-            <TextField
-              label="Full Name"
-              placeholder="John Doe"
-              fullWidth
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <Button variant="contained" fullWidth onClick={handleSignupFinish}>
-              Finish Sign Up
-            </Button>
-          </Stack>
-        )}
-
-        {step === 'enterPhone' && (
-          <>
-            <Divider sx={{ my: 3 }} />
-            <Typography variant="body2" textAlign="center">
-              {isSignup ? 'Already have an account?' : "Don't have an account?"}
-              <Button variant="text" size="small" onClick={() => setIsSignup(!isSignup)}>
-                {isSignup ? 'Sign In' : 'Sign Up'}
-              </Button>
-            </Typography>
-          </>
-        )} */}
       </Card>
+      <Dialog
+        open={noUser}
+        onClose={()=>setNoUser(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          No User Account
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            No Account found with {phone}. check again!
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>setNoUser(false)}>OK</Button>
+          <Button onClick={()=>{
+            setNoUser(false)
+            setIsSignup(true)
+
+          }} autoFocus>
+            Register
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={showOTP}
+        onClose={()=>setShowOTP(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          OTP
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Your otp is {yourOTP}. This is temporary!.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>setShowOTP(false)}>OK</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={wrongOtp}
+        onClose={()=>setWrongOtp(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Invalid OTP
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            You entered invalid or expired OTP
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>setWrongOtp(false)}>OK</Button>
+        </DialogActions>
+      </Dialog>
     </Box >
   );
 }

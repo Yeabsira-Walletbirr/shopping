@@ -2,6 +2,7 @@ import { Box, Card, CardContent, CardMedia, Chip, Stack, Typography } from "@mui
 import { useRouter } from "next/navigation";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import StraightenIcon from '@mui/icons-material/Straighten';
+import { Star } from "@mui/icons-material";
 type PlaceItem = {
     id: number,
     name: string,
@@ -13,12 +14,13 @@ type PlaceItem = {
     longitude: number,
     productTypes: any,
     photoDataUrl: any,
-    distance:any
+    distance: any,
+    rating: number
 };
 const Place = (placeItem: PlaceItem) => {
     const router = useRouter()
     return (
-           <Card
+        <Card
             sx={{
                 display: 'flex',
                 alignItems: 'center',
@@ -27,7 +29,7 @@ const Place = (placeItem: PlaceItem) => {
                 // maxWidth: 320,
                 my: 2,
                 flexShrink: 0,
-                boxShadow:4
+                boxShadow: 4
             }}
             onClick={() => router.push(`/place/${placeItem.id}`)}
         >
@@ -57,9 +59,12 @@ const Place = (placeItem: PlaceItem) => {
                     </Stack>
                 </Stack>
 
-                <Typography fontWeight="bold" fontSize={13}>
-                    4.0
-                </Typography>
+                {placeItem?.rating != 0 && <Typography fontWeight="bold" fontSize={13}>
+                    <Stack direction="row" spacing={0.5} alignItems="center">
+                        <Star sx={{ fontSize: 14, color:'orange' }} />
+                        <Typography fontSize={11}>{placeItem?.rating}</Typography>
+                    </Stack>
+                </Typography>}
             </Box>
         </Card>
     )
