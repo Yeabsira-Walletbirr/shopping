@@ -16,6 +16,7 @@ import {
     FormControlLabel,
     Radio,
     CircularProgress,
+    Rating,
 } from '@mui/material';
 import 'keen-slider/keen-slider.min.css';
 import { ArrowBack, Comment, DeliveryDining, LocationPin, ShoppingBag, Star, ThumbUp, Watch, WatchOutlined } from '@mui/icons-material';
@@ -28,15 +29,20 @@ import API from '@/api'
 import { useLocation } from '@/contexts/LocationContext';
 
 import StraightenIcon from '@mui/icons-material/Straighten';
+import { useUser } from '@/contexts/UserContext';
 
 const PlaceCard = ({ params }: any) => {
     const { slug }: any = React.use(params)
     const api = API()
+        const user = useUser();
+    
 
     const [viewerHeight, setViewerHeight] = useState(250);
     const router = useRouter()
 
     const { latitude, setLatitude, longitude, setLongitude } = useLocation();
+    const [yourRate, setYourRate] = useState(0)
+    const [rate, setRate] = useState(0)
 
     const [value, setValue] = useState('option1');
     const options = [
@@ -113,11 +119,12 @@ const PlaceCard = ({ params }: any) => {
             const data = await api.post(`/place/${slug}`, {
                 latitude: latitude,
                 longitude: longitude,
-                address:''
+                address: ''
 
             });
-
-            if (data?.photo)
+            setYourRate(data?.yourRating || 0)
+            setRate(data?.rating || 0)
+            if (data?.photo) {
                 try {
                     const res = await api.get(`/files/view/${data.photo}`, null, {
                         responseType: 'blob',
@@ -129,6 +136,7 @@ const PlaceCard = ({ params }: any) => {
                     data['photoDataUrl'] = null;
 
                 }
+            }
             setPlace(data)
         }
         catch {
@@ -171,15 +179,32 @@ const PlaceCard = ({ params }: any) => {
         }
     };
 
+    const ratePlace=async(ratting:number) => {
+        try{
+            const payload = {
+                userId: user?.user?.id,
+                entityId: slug,
+                rating: ratting,
+                comment: '',
+            };
+            const res = await api.post(`/place/rate`,payload)
+            setYourRate(ratting)
+            setRate(res)
+        }
+        catch{
+
+        }
+    }
+
 
     return (place ?
         <Paper
             sx={{
-                height: '100vh', // Full viewport height
-                overflowY: 'auto', // Enable scrolling
+                height: '100vh',
+                overflowY: 'auto',
                 fontFamily: 'sans-serif',
                 boxShadow: 'none',
-                position: 'relative', // Needed for sticky to work inside
+                position: 'relative',
             }}
         >
             <Box
@@ -222,7 +247,7 @@ const PlaceCard = ({ params }: any) => {
 
                 <Box
                     ref={tabRef}
-                    onClick={() => setViewerHeight(viewerHeight == 500 ? 250 : 500)}
+                    // onClick={() => setViewerHeight(viewerHeight == 500 ? 250 : 500)}
                     className="keen-slider__slide"
                     sx={{
                         height: '100%',
@@ -266,14 +291,27 @@ const PlaceCard = ({ params }: any) => {
                             <Typography fontWeight={700} fontSize={16} color="white">
                                 {place?.name}
                             </Typography>
-                            {place?.isOpen ? <Typography fontWeight={600} fontSize={12} color="#00ff00" display="flex" alignItems="center">
-                                <CircleIcon sx={{ fontSize: 10, mr: 0.5 }} /> Open now
-                            </Typography>
+                            {place?.isOpen ?
+                                <Typography fontWeight={600} fontSize={12} color="#00ff00" display="flex" alignItems="center">
+                                    <CircleIcon sx={{ fontSize: 10, mr: 0.5 }} /> Open now
+                                </Typography>
                                 :
-
                                 <Typography fontWeight={600} fontSize={12} color="#7d0000e1" display="flex" alignItems="center">
                                     <CircleIcon sx={{ fontSize: 10, mr: 0.5 }} /> Closed
                                 </Typography>}
+                            <Rating
+
+                                value={yourRate}
+                                onChange={(e, newValue) => {
+                                    if (newValue) {
+                                    //     setPendingRating(newValue);
+                                    ratePlace(newValue);
+                                    //     setShowCommentInput(true);
+                                    }
+                                }}
+                                precision={1}
+                                sx={{ mb: 1 }}
+                            />
                         </Box>
 
                         {/* Right: Info */}
@@ -297,9 +335,9 @@ const PlaceCard = ({ params }: any) => {
                                 alignItems="center"
                                 mb={1}
                             >
-                                <StraightenIcon sx={{ fontSize: 16, mr:1 }} />
+                                <StraightenIcon sx={{ fontSize: 16, mr: 1 }} />
 
-                                {place?.distance?.toFixed(1)+ " km"}
+                                {place?.distance?.toFixed(1) + " km"}
                             </Typography>
 
                             <Typography
@@ -319,7 +357,7 @@ const PlaceCard = ({ params }: any) => {
 
                             </Typography>
 
-                            {place?.rating > 0 && <Typography
+                            {rate > 0 && <Typography
                                 fontWeight={500}
                                 fontSize={13}
                                 color="#FFD700"
@@ -327,7 +365,7 @@ const PlaceCard = ({ params }: any) => {
                                 alignItems="center"
                             >
                                 <Star sx={{ fontSize: 16, mr: 1 }} />
-                                Rate: {place?.rating}
+                                Rate: {rate}
                             </Typography>}
                         </Box>
                     </Stack>

@@ -53,10 +53,10 @@ const Place = (placeItem: PlaceItem) => {
                         <StraightenIcon sx={{ fontSize: 14 }} />
                         <Typography fontSize={11}>{placeItem?.distance?.toFixed(2)} KM</Typography>
                     </Stack>
-                    <Stack direction="row" spacing={0.5} alignItems="center">
+                    {/* <Stack direction="row" spacing={0.5} alignItems="center">
                         <AccessTimeIcon sx={{ fontSize: 14 }} />
                         <Typography fontSize={11}>20 minuites</Typography>
-                    </Stack>
+                    </Stack> */}
                 </Stack>
 
                 {placeItem?.rating != 0 && <Typography fontWeight="bold" fontSize={13}>
