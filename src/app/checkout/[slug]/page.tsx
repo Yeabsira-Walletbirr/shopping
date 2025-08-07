@@ -42,7 +42,7 @@ const Transition = React.forwardRef(function Transition(
 const Checkout = ({ params }: any) => {
     const user = useUser()
     const { slug }: any = React.use(params);
-    const { cartItemsByPlace, getTotalPrice } = useCart();
+    const { cartItemsByPlace, getTotalPrice,deleteFromCart } = useCart();
     const [products, setProducts] = useState<any[]>([]);
     const [total, setTotal] = useState(0);
     const [location, setLocation] = useState<{ address: string; lat: number; lng: number } | null>(null);
@@ -126,6 +126,9 @@ const Checkout = ({ params }: any) => {
                     token: user?.user?.fcmToken
                 }
             })
+            orders.forEach(order => {
+                deleteFromCart(order.productId, order.placeId)
+            });
             const res = await api.post(`product/bulkOrder`, orders)
             setResponse(res)
             setOpen(true)

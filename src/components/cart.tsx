@@ -63,7 +63,6 @@ const CartPage = () => {
     fetch();
   }, [cartItemsByPlace]);
 
-  const placeNameFromProduct = (product: any) => product?.place?.name || `Place ${product.placeId}`;
 
   return (
     <Container maxWidth="md" sx={{ py: 1, height: '100vh', display: 'flex', flexDirection: 'column' }}>

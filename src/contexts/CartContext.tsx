@@ -55,27 +55,29 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             ).filter(i => i.quantity > 0);
             return { ...prev, [placeId]: updated };
         });
+        
     };
 
-   const deleteFromCart = (id: number, placeId: number) => {
-    setCartItemsByPlace(prev => {
-        const current = prev[placeId];
-        if (!current) return prev;
-        const updated = current.filter(i => i.id !== id);
-        if (updated.length === 0) {
-            const { [placeId]: _, ...rest } = prev;
-            return rest;
-        }
-
-        return { ...prev, [placeId]: updated };
-    });
-};
+    const deleteFromCart = (id: number, placeId: number) => {
+        setCartItemsByPlace(prev => {
+            const current = prev[placeId];
+            if (!current) return prev;
+            const updated = current.filter(i => i.id !== id);
+            if (updated.length === 0) {
+                const { [placeId]: _, ...rest } = prev;
+                return rest;
+            }
+            return { ...prev, [placeId]: updated };
+        });
+    };
 
     const getItemCount = (id: number, placeId: number) => {
         return cartItemsByPlace[placeId]?.find(i => i.id === id)?.quantity || 0;
     };
 
     const getTotalItems = (placeId?: number) => {
+        console.log(cartItemsByPlace)
+
         if (placeId != null) {
             return cartItemsByPlace[placeId]?.reduce((sum, i) => sum + i.quantity, 0) || 0;
         }
@@ -86,7 +88,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         const allItems = placeId != null ? cartItemsByPlace[placeId] || [] : Object.values(cartItemsByPlace).flat();
 
         return allItems.reduce((sum, i) => {
-            const price =i.price
+            const price = i.price
             return sum + i.quantity * price;
         }, 0);
     };
