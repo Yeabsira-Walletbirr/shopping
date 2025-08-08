@@ -138,7 +138,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         try {
             const payload = {
                 userId: user?.user?.id,
-                productId: id,
+                entityId: id,
                 rating: r,
                 comment: comment,
             };
