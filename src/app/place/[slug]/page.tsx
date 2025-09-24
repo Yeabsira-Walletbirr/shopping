@@ -34,8 +34,8 @@ import { useUser } from '@/contexts/UserContext';
 const PlaceCard = ({ params }: any) => {
     const { slug }: any = React.use(params)
     const api = API()
-        const user = useUser();
-    
+    const user = useUser();
+
 
     const [viewerHeight, setViewerHeight] = useState(250);
     const router = useRouter()
@@ -45,7 +45,7 @@ const PlaceCard = ({ params }: any) => {
     const [rate, setRate] = useState(0)
 
     const [value, setValue] = useState('option1');
-    const options = [
+    const foodOptions = [
         { label: 'All', value: 'option1' },
         { label: 'Fasting', value: 'option2' },
         { label: 'Breakfast', value: 'option3' },
@@ -74,7 +74,7 @@ const PlaceCard = ({ params }: any) => {
                 page: pageNumber,
                 pageSize: 10
             }
-            const res = await api.get(`/product/getProductByPlace`, {
+            const res = await api.get(`/product/getAllProductByPlace`, {
                 ...payload
             })
             const newProducts = await getPhoto(res);
@@ -179,19 +179,19 @@ const PlaceCard = ({ params }: any) => {
         }
     };
 
-    const ratePlace=async(ratting:number) => {
-        try{
+    const ratePlace = async (ratting: number) => {
+        try {
             const payload = {
                 userId: user?.user?.id,
                 entityId: slug,
                 rating: ratting,
                 comment: '',
             };
-            const res = await api.post(`/place/rate`,payload)
+            const res = await api.post(`/place/rate`, payload)
             setYourRate(ratting)
             setRate(res)
         }
-        catch{
+        catch {
 
         }
     }
@@ -219,12 +219,12 @@ const PlaceCard = ({ params }: any) => {
                     height: 60,
                     backgroundColor: tabReachedTop ? '#fff' : 'transparent',
                     boxShadow: tabReachedTop ? '0 2px 6px rgba(0,0,0,0.1)' : 'none',
-                    color: '#ffa600',
+                    color: '#0C4941',
                     transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
                 }}
             >
                 <IconButton onClick={() => router.back()}>
-                    <ArrowBack sx={{ color: 'orange' }} />
+                    <ArrowBack sx={{ color: '#0C4941' }} />
                 </IconButton>
 
             </Box>
@@ -304,9 +304,9 @@ const PlaceCard = ({ params }: any) => {
                                 value={yourRate}
                                 onChange={(e, newValue) => {
                                     if (newValue) {
-                                    //     setPendingRating(newValue);
-                                    ratePlace(newValue);
-                                    //     setShowCommentInput(true);
+                                        //     setPendingRating(newValue);
+                                        ratePlace(newValue);
+                                        //     setShowCommentInput(true);
                                     }
                                 }}
                                 precision={1}
@@ -391,19 +391,19 @@ const PlaceCard = ({ params }: any) => {
                     scrollbarWidth: 'none',
                 }}
             >
-                {options.map((option) => (
+                {place?.productTypes?.includes('FOOD') && foodOptions.map((option) => (
                     <FormControlLabel
                         key={option.value}
                         value={option.value}
-                        control={<Radio sx={{ display: 'none' }} />} // hide default radio
+                        control={<Radio sx={{ display: 'none' }} />}
                         label={
                             <Box
                                 sx={{
                                     p: '3px',
                                     borderRadius: 2,
                                     border: '2px solid',
-                                    borderColor: value === option.value ? 'orange' : 'grey.300',
-                                    color: value === option.value ? 'orange' : 'text.primary',
+                                    borderColor: value === option.value ? '#0C4941' : 'grey.300',
+                                    color: value === option.value ? '#0C4941' : 'text.primary',
                                     cursor: 'pointer',
                                     textAlign: 'center',
                                     transition: 'all 0.2s',

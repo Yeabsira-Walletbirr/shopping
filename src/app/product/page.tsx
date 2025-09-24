@@ -50,7 +50,7 @@ const ProductCard = () => {
                     boxShadow: 'none'
                 }}
             >
-                <ArrowBack sx={{ fontSize: 40, position: 'absolute', zIndex: 1, color: '#ffa600' }} onClick={() => router.back()} />
+                <ArrowBack sx={{ fontSize: 40, position: 'absolute', zIndex: 1, color: '#0C4941' }} onClick={() => router.back()} />
                 {/* Swipeable Product Images */}
                 <Box
                     sx={{
@@ -143,13 +143,13 @@ const ProductCard = () => {
                         fullWidth
                         variant="contained"
                         sx={{
+                            backgroundColor: '#0C4941',
                             mt: 3,
                             borderRadius: 20,
                             textTransform: 'none',
-                            backgroundColor: '#000',
                             fontWeight: 'bold',
                             '&:hover': {
-                                backgroundColor: '#333',
+                                backgroundColor: '#006d41ff',
                             },
                         }}
                     >
@@ -163,10 +163,10 @@ const ProductCard = () => {
                             mt: 3,
                             borderRadius: 20,
                             textTransform: 'none',
-                            backgroundColor: '#000',
+                            backgroundColor: '#0C4941',
                             fontWeight: 'bold',
                             '&:hover': {
-                                backgroundColor: '#333',
+                                backgroundColor: '#003c2dff',
                             },
                         }}
                     >

@@ -23,13 +23,13 @@ const YourCartButton = () => {
 
   return (
     (pathname !== '/cart' && pathname !== '/auth' && user.isAuthenticated) &&
-     (
+    (
       <Box sx={{ position: 'fixed', bottom: 20, right: 20, zIndex: 1000 }}>
         <Button
           onClick={() => router.push('/cart')}
           variant="contained"
           sx={{
-            background: '#ffa600',
+            background: '#0C4941',
             color: '#fff',
             fontWeight: 600,
             px: 3,

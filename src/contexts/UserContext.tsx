@@ -5,7 +5,7 @@ import { messaging, initializeMessaging } from '@/utils/firebase';
 
 import { getToken, onMessage } from "firebase/messaging";
 import API from '@/api';
-
+import { useCookies } from 'next-client-cookies';
 interface User {
   id: number;
   fullName: string;
@@ -31,6 +31,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter()
 
+  const cookies = useCookies();
   const requestPermission = async () => {
     try {
       const storedUser = localStorage.getItem('user');
@@ -69,15 +70,25 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     requestPermission()
   }, []);
 
-  const login = (userData: User) => {
+  const login = async (userData: User) => {
     console.log(userData)
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('token', userData.token);
+
+    cookies.set("user", JSON.stringify(userData));
+    cookies.set("token", userData.token);
+
   };
 
-  const logout = () => {
+  const logout = async () => {
     setUser(null);
+    try {
+      cookies.remove("user");
+      cookies.remove("token");
+    } catch (error) {
+      console.log(`Error deleting cookie1: ${error}`);
+    }
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     router.push('/')
@@ -89,7 +100,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       const updatedUser = { ...user, ...updatedData };
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
-    }else{
+    } else {
       setUser(updatedData)
       localStorage.setItem('user', JSON.stringify(updatedData));
     }

@@ -27,9 +27,9 @@ const PRODUCT_TYPES = [
     { label: "OTHER", value: "OTHER" },
 ];
 
-export default function EditProductForm({ params }:any) {
+export default function EditProductForm({ params }: any) {
     const api = API();
-    const { slug }:any = React.use(params); // assuming the route is /product/edit/[id]
+    const { slug }: any = React.use(params); // assuming the route is /product/edit/[id]
 
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
@@ -38,8 +38,8 @@ export default function EditProductForm({ params }:any) {
     const [photo, setPhoto] = useState('');
     const [loading, setLoading] = useState(true);
     const router = useRouter()
-    const [images, setImages]:any = useState([]);
-    const [quantity, setQuantity]:any = useState()
+    const [images, setImages]: any = useState([]);
+    const [quantity, setQuantity]: any = useState()
 
 
     useEffect(() => {
@@ -83,7 +83,7 @@ export default function EditProductForm({ params }:any) {
         }
     };
 
-    const onUploadSuccess = (response:any) => {
+    const onUploadSuccess = (response: any) => {
         setPhoto(response.fileTitle);
     };
 
@@ -159,6 +159,7 @@ export default function EditProductForm({ params }:any) {
                                 variant="contained"
                                 color="primary"
                                 fullWidth
+                                sx={{ backgroundColor: '#0C4941' }}
                                 onClick={handleSubmit}
                             >
                                 Update Product

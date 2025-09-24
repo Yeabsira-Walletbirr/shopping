@@ -33,12 +33,14 @@ export default function PhoneAuth() {
   const [email, setEmail] = useState('');
   const [noUser, setNoUser] = useState(false)
   const [wrongOtp, setWrongOtp] = useState(false)
-  const [showOTP ,setShowOTP] = useState(false)
+  const [showOTP, setShowOTP] = useState(false)
+
+  const [errorMessage, setErrorMessage] = useState();
 
   const [yourOTP, setYourOTP] = useState('')
   const api = API()
   const user = useUser()
-  
+
 
   useEffect(() => {
     console.log(user)
@@ -58,20 +60,21 @@ export default function PhoneAuth() {
         setStep('enterOTP');
 
       }
-      catch (e) {
-        alert(e)
+      catch (e: any) {
+        setErrorMessage(e.response.data)
+
 
       }
     } else {
       try {
         const res = await api.authenticate('/auth/login', { identifier: phone, method: 'PHONE_NUMBER' })
-         setYourOTP(res)
+        setYourOTP(res)
         setShowOTP(true)
         setStep('enterOTP');
 
       }
-      catch {
-        setNoUser(true)
+      catch (e: any) {
+        setErrorMessage(e.response.data)
       }
     }
   };
@@ -89,30 +92,30 @@ export default function PhoneAuth() {
     }
   };
 
-  const requestPermission = async (u:any) => {
-  try {
-    const permission = await Notification.requestPermission();
-    const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+  const requestPermission = async (u: any) => {
+    try {
+      const permission = await Notification.requestPermission();
+      const swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
 
-    if (permission === "granted") {
-      await initializeMessaging();
-      if (!messaging) return;
+      if (permission === "granted") {
+        await initializeMessaging();
+        if (!messaging) return;
 
-      const token = await getToken(messaging, {
-        vapidKey: "BM71MSQ3H6NRxuMvvPdtWPMtoz_allOynbIWDZeyikouwpmpAVdi29aRpyEYzIHP2KLRp0ttXi7EO3Cj08D-Lz0",
-        serviceWorkerRegistration: swReg,
-      });
+        const token = await getToken(messaging, {
+          vapidKey: "BM71MSQ3H6NRxuMvvPdtWPMtoz_allOynbIWDZeyikouwpmpAVdi29aRpyEYzIHP2KLRp0ttXi7EO3Cj08D-Lz0",
+          serviceWorkerRegistration: swReg,
+        });
 
-      
-      console.log("FCM Token:", u);
-      u['fcmToken'] = token;
-      user.updateProfile(u);
-      await api.put(`/dispatcher/updateFcm/${u?.id}`, { token });
+
+        console.log("FCM Token:", u);
+        u['fcmToken'] = token;
+        user.updateProfile(u);
+        await api.put(`/dispatcher/updateFcm/${u?.id}`, { token });
+      }
+    } catch (err) {
+      console.error("Permission denied or error", err);
     }
-  } catch (err) {
-    console.error("Permission denied or error", err);
-  }
-};
+  };
 
 
   const handleSignupFinish = () => {
@@ -125,7 +128,7 @@ export default function PhoneAuth() {
     <Box minHeight="60vh" display="flex" justifyContent="center" alignItems="center" px={2}>
       <Card sx={{ p: 4, borderRadius: 3, boxShadow: 5, maxWidth: 400, width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <Typography sx={{ color: 'orange' }} variant="h3" fontWeight="bold" gutterBottom textAlign="center">
+          <Typography sx={{ color: '#0C4941' }} variant="h3" fontWeight="bold" gutterBottom textAlign="center">
             VIA
           </Typography>
           <Typography sx={{ color: 'black' }} variant="h3" fontWeight="bold" gutterBottom textAlign="center">
@@ -176,7 +179,7 @@ export default function PhoneAuth() {
                   </Typography>
                 </>
 
-                <Button sx={{ backgroundColor: 'orange' }} variant="contained" fullWidth onClick={handleSendOTP}>
+                <Button sx={{ backgroundColor: '#0C4941' }} variant="contained" fullWidth onClick={handleSendOTP}>
                   Send OTP
                 </Button>
               </Stack>
@@ -190,7 +193,7 @@ export default function PhoneAuth() {
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                 />
-                <Button sx={{ backgroundColor: 'orange' }} variant="contained" fullWidth onClick={handleVerifyOTP}>
+                <Button sx={{ backgroundColor: '#0C4941' }} variant="contained" fullWidth onClick={handleVerifyOTP}>
                   Verify OTP
                 </Button>
               </Stack>
@@ -209,7 +212,7 @@ export default function PhoneAuth() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                   />
-                  <Button sx={{ backgroundColor: 'orange' }} variant="contained" fullWidth onClick={handleSendOTP}>
+                  <Button sx={{ backgroundColor: '#0C4941' }} variant="contained" fullWidth onClick={handleSendOTP}>
                     Send OTP
                   </Button>
                 </Stack>
@@ -233,7 +236,7 @@ export default function PhoneAuth() {
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                 />
-                <Button sx={{ backgroundColor: 'orange' }} variant="contained" fullWidth onClick={handleVerifyOTP}>
+                <Button sx={{ backgroundColor: '#0C4941' }} variant="contained" fullWidth onClick={handleVerifyOTP}>
                   Verify OTP
                 </Button>
               </Stack>
@@ -242,23 +245,23 @@ export default function PhoneAuth() {
         }
       </Card>
       <Dialog
-        open={noUser}
-        onClose={()=>setNoUser(false)}
+        open={errorMessage != undefined}
+        onClose={() => setErrorMessage(undefined)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          No User Account
+          Error
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            No Account found with {phone}. check again!
+            {errorMessage}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>setNoUser(false)}>OK</Button>
-          <Button onClick={()=>{
-            setNoUser(false)
+          <Button onClick={() => setErrorMessage(undefined)}>OK</Button>
+          <Button onClick={() => {
+            setErrorMessage(undefined)
             setIsSignup(true)
 
           }} autoFocus>
@@ -268,7 +271,7 @@ export default function PhoneAuth() {
       </Dialog>
       <Dialog
         open={showOTP}
-        onClose={()=>setShowOTP(false)}
+        onClose={() => setShowOTP(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -281,13 +284,13 @@ export default function PhoneAuth() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>setShowOTP(false)}>OK</Button>
+          <Button onClick={() => setShowOTP(false)}>OK</Button>
         </DialogActions>
       </Dialog>
 
       <Dialog
         open={wrongOtp}
-        onClose={()=>setWrongOtp(false)}
+        onClose={() => setWrongOtp(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
@@ -300,7 +303,7 @@ export default function PhoneAuth() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={()=>setWrongOtp(false)}>OK</Button>
+          <Button onClick={() => setWrongOtp(false)}>OK</Button>
         </DialogActions>
       </Dialog>
     </Box >

@@ -18,13 +18,13 @@ type TrendingProductItem = {
     rating?: any,
     discount?: any,
     description?: any,
-    like?:any,
-    comment?:any,
-    view?:any,
+    like?: any,
+    comment?: any,
+    view?: any,
     images?: [],
-    counter?:any,
-    photoDataUrl?:any,
-    title?:any
+    counter?: any,
+    photoDataUrl?: any,
+    title?: any
 };
 const TrendingProduct = (trendingproductItem: TrendingProductItem) => {
     const router = useRouter()
@@ -90,12 +90,12 @@ const TrendingProduct = (trendingproductItem: TrendingProductItem) => {
                             <ChatBubbleOutlineIcon sx={{ fontSize: 14 }} />
                             <Typography fontSize={11}>{trendingproductItem?.comment}</Typography>
                         </Stack>
-                         <Stack direction="row" spacing={0.5} alignItems="center">
+                        <Stack direction="row" spacing={0.5} alignItems="center">
                             <ShoppingCart sx={{ fontSize: 14 }} />
                             <Typography fontSize={11}>{trendingproductItem?.counter}</Typography>
                         </Stack>
-                        { trendingproductItem?.rating && <Stack direction="row" spacing={0.5} alignItems="center">
-                            <Star sx={{ fontSize: 14, color:'orange' }} />
+                        {trendingproductItem?.rating && <Stack direction="row" spacing={0.5} alignItems="center">
+                            <Star sx={{ fontSize: 14, color: '#0C4941' }} />
                             <Typography fontSize={11}>{trendingproductItem?.rating}</Typography>
                         </Stack>}
                     </Stack>

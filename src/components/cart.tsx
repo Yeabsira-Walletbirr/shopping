@@ -77,7 +77,7 @@ const CartPage = () => {
         </Box>
         <Chip
           label={getTotalItems()}
-          sx={{ color: 'orange' }}
+          sx={{ color: '#0C4941' }}
           icon={<ShoppingBagOutlinedIcon />}
         />
       </Box>
@@ -98,7 +98,7 @@ const CartPage = () => {
                     <Typography fontWeight="bold">{placeName}</Typography>
                     <Chip
                       label={`${items.length} items`}
-                      sx={{ ml: 1, background: '#ffa600', color: '#fff' }}
+                      sx={{ ml: 1, background: '#0C4941', color: '#fff' }}
                       size="small"
                     />
                   </Box>
@@ -119,7 +119,7 @@ const CartPage = () => {
                       variant="contained"
                       fullWidth
                       size="large"
-                      sx={{ borderRadius: 3, backgroundColor: 'orange' }}
+                      sx={{ borderRadius: 3, backgroundColor: '#0C4941' }}
                       onClick={() => {
                         // console.log(`Checkout for place ${placeId}`, cartItemsByPlace[Number(placeId)]);
                         router.push(`/checkout/${placeId}`)

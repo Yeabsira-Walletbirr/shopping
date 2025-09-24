@@ -34,23 +34,23 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import ProtectedRoute from "@/utils/protector";
 import { Check, CheckBox, CheckBoxOutlineBlank, Close } from "@mui/icons-material";
 
-export default function ViewProduct({ params }:any) {
+export default function ViewProduct({ params }: any) {
     const router = useRouter()
     const api = API();
-    const { slug }:any = React.use(params);
+    const { slug }: any = React.use(params);
 
-    const [product, setProduct]:any = useState(null);
-    const [imageUrl, setImageUrl]:any = useState('');
-    const [loading, setLoading]:any = useState(true);
-    const [error, setError]:any = useState("");
+    const [product, setProduct]: any = useState(null);
+    const [imageUrl, setImageUrl]: any = useState('');
+    const [loading, setLoading]: any = useState(true);
+    const [error, setError]: any = useState("");
 
-    const [showDiscountModal, setShowDiscountModal]:any = useState(false);
-    const [newDiscountPrice, setNewDiscountPrice]:any = useState(product?.price || '');
-    const [discountSelected, setDiscountSelected]:any = useState(false);
+    const [showDiscountModal, setShowDiscountModal]: any = useState(false);
+    const [newDiscountPrice, setNewDiscountPrice]: any = useState(product?.price || '');
+    const [discountSelected, setDiscountSelected]: any = useState(false);
 
-    const [statusColor, setStatusColor]:any = useState('white')
+    const [statusColor, setStatusColor]: any = useState('white')
 
-    const [images, setImages]:any = useState([])
+    const [images, setImages]: any = useState([])
 
 
     const [previewOpen, setPreviewOpen] = useState(false);
@@ -89,7 +89,7 @@ export default function ViewProduct({ params }:any) {
                 }
 
                 if (res.images?.length > 0) {
-                    res?.images.forEach(async (image:any) => {
+                    res?.images.forEach(async (image: any) => {
                         const fileRes = await fetchImage(image)
                         const img = URL.createObjectURL(fileRes);
                         if (images.length < 3)
@@ -146,15 +146,15 @@ export default function ViewProduct({ params }:any) {
         );
     }
 
-    const setOutOfStock = async (e:any) => {
+    const setOutOfStock = async (e: any) => {
         try {
             if (e.target.checked) {
-                setProduct((prev:any) => ({
+                setProduct((prev: any) => ({
                     ...prev,
                     outOfStock: true,
                 }));
             } else {
-                setProduct((prev:any) => ({
+                setProduct((prev: any) => ({
                     ...prev,
                     outOfStock: false,
                 }));
@@ -177,7 +177,7 @@ export default function ViewProduct({ params }:any) {
                     'Content-Type': 'application/json',
                 },
             })
-            setProduct((prev:any) => ({
+            setProduct((prev: any) => ({
                 ...prev,
                 price: newDiscountPrice,
                 discount: true
@@ -206,7 +206,7 @@ export default function ViewProduct({ params }:any) {
                     {/* Thumbnail Scrollable Image Gallery */}
                     {images?.length > 0 && (
                         <Box sx={{ overflowX: 'auto', scrollbarWidth: 'none', display: 'flex', gap: 1, px: 2, mt: 2, placeContent: 'center' }}>
-                            {images.map((x:any, index:any) => (
+                            {images.map((x: any, index: any) => (
                                 <CardMedia
                                     key={index}
                                     component="img"
@@ -254,20 +254,20 @@ export default function ViewProduct({ params }:any) {
                                     checked={product?.discount}
                                     onChange={(e) => {
                                         if (e.target.checked) {
-                                            setProduct((prev:any) => ({
+                                            setProduct((prev: any) => ({
                                                 ...prev,
                                                 discount: true,
                                             }));
                                             setShowDiscountModal(true)
                                         } else {
-                                            setProduct((prev:any) => ({
+                                            setProduct((prev: any) => ({
                                                 ...prev,
                                                 discount: false,
                                             }));
                                         }
                                     }}
                                     icon={<DiscountIcon sx={{ color: 'gray' }} />}
-                                    checkedIcon={<DiscountIcon sx={{ color: 'orange' }} />}
+                                    checkedIcon={<DiscountIcon sx={{ color: '#0C4941' }} />}
                                 />
                             }
                             label=""
@@ -280,8 +280,8 @@ export default function ViewProduct({ params }:any) {
                                     onChange={(e) => {
                                         setOutOfStock(e)
                                     }}
-                                    // icon={<CheckBox sx={{ color: 'gray' }} />}
-                                    // checkedIcon={<CheckBoxOutlineBlank sx={{ color: 'orange' }} />}
+                                // icon={<CheckBox sx={{ color: 'gray' }} />}
+                                // checkedIcon={<CheckBoxOutlineBlank sx={{ color: '#0C4941' }} />}
                                 />
                             }
                             label="Out of stock"
@@ -389,7 +389,7 @@ export default function ViewProduct({ params }:any) {
                     open={showDiscountModal}
                     onClose={() => {
                         setShowDiscountModal(false);
-                        setProduct((prev:any) => ({
+                        setProduct((prev: any) => ({
                             ...prev,
                             discount: false,
                         }));
@@ -421,12 +421,13 @@ export default function ViewProduct({ params }:any) {
                         <Stack direction="row" spacing={2} justifyContent="flex-end" mt={3}>
                             <Button variant="outlined" onClick={() => {
                                 setShowDiscountModal(false);
-                                setProduct((prev:any) => ({
+                                setProduct((prev: any) => ({
                                     ...prev,
                                     discount: false,
                                 }));
                             }}>Cancel</Button>
                             <Button
+                                sx={{ backgroundColor: '#0C4941' }}
                                 variant="contained"
                                 onClick={() => {
                                     if (product.price <= newDiscountPrice) {

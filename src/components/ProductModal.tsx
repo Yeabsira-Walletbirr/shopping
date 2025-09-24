@@ -123,7 +123,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         startY.current = null;
     };
 
-    const close=()=>{
+    const close = () => {
         setShowImages(false)
 
     }
@@ -208,8 +208,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
                 }
             };
             fetchAllImages();
-        }else{
-                    setShowImages(true)
+        } else {
+            setShowImages(true)
 
         }
         if (open) {
@@ -316,12 +316,12 @@ const ProductModal: React.FC<ProductModalProps> = ({
                                 backgroundColor: '#000',
                                 borderTopLeftRadius: '20px',
                                 borderTopRightRadius: '20px',
-                                alignContent:'center',
-                                textAlign:'center',
+                                alignContent: 'center',
+                                textAlign: 'center',
                                 overflow: 'hidden',
                             }}
                         >
-                            <CircularProgress/>
+                            <CircularProgress />
                         </Box>
                     }
 
@@ -368,7 +368,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                                                 setYourRate(yourRating);
                                             setCommentInput('');
                                         }}>Cancel</Button>
-                                        <Button size="small" variant="contained" onClick={() => {
+                                        <Button sx={{ backgroundColor: '#0C4941' }} size="small" variant="contained" onClick={() => {
                                             if (user.isAuthenticated && pendingRating !== null) {
                                                 rateProduct(pendingRating, commentInput);
                                             }
@@ -409,7 +409,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, boxShadow: 2, p: 1, borderRadius: 5 }}>
                                 <Box display="flex" alignItems="center" gap={1}>
-                                    <IconButton><Star sx={{ color: 'orange' }} /></IconButton>
+                                    <IconButton><Star sx={{ color: '#0C4941' }} /></IconButton>
                                     <Typography variant="body2">{rating?.toFixed(1)}</Typography>
                                 </Box>
                                 <Box display="flex" alignItems="center" gap={1}>
@@ -436,7 +436,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                             <Button
                                 variant="contained"
                                 fullWidth
-                                sx={{ backgroundColor: 'orange' }}
+                                sx={{ backgroundColor: '#0C4941' }}
                                 startIcon={<ShoppingCartIcon />}
                                 onClick={() => {
                                     handleClose();

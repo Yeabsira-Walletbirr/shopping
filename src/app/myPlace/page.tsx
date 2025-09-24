@@ -18,7 +18,7 @@ import { Add } from '@mui/icons-material';
 import ProtectedRoute from '@/utils/protector';
 
 export default function PlaceList() {
-    const [places, setPlaces]:any = useState([]);
+    const [places, setPlaces]: any = useState([]);
     const [loading, setLoading] = useState(false);
     const api = API();
     const router = useRouter();
@@ -34,7 +34,7 @@ export default function PlaceList() {
                 const data = await api.get(`/place/user/${user.id}`);
 
                 const placesWithPhotos = await Promise.all(
-                    data.map(async (place:any) => {
+                    data.map(async (place: any) => {
                         if (place.photo) {
                             try {
                                 const res = await api.get(`/files/view/${place.photo}`, null, {
@@ -70,7 +70,7 @@ export default function PlaceList() {
                 {loading ? (
                     <CircularProgress />
                 ) : (
-                    places.map((place:any) => (
+                    places.map((place: any) => (
                         <Card key={place.id} onClick={() => router.push(`/myPlace/view/${place.id}`)} sx={{ cursor: 'pointer', display: 'flex' }}>
                             {place.photoDataUrl && (
                                 <CardMedia
@@ -94,7 +94,7 @@ export default function PlaceList() {
                     <IconButton
                         onClick={() => router.push('/myPlace/add')}
                         sx={{
-                            background: '#ffa600',
+                            background: '#0C4941',
                             color: '#fff',
                             fontWeight: 600,
                             px: 3,
@@ -103,7 +103,7 @@ export default function PlaceList() {
                             textTransform: 'none',
                             boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
                             '&:hover': {
-                                background: '#e59400',
+                                background: '#0C4941',
                             },
                         }}
 

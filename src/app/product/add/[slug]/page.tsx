@@ -25,17 +25,17 @@ const PRODUCT_TYPES = [
     { label: "OTHER", value: "OTHER" },
 ];
 
-export default function AddProductForm({ params }:any) {
+export default function AddProductForm({ params }: any) {
     const api = API();
-    const { slug }:any = React.use(params)
+    const { slug }: any = React.use(params)
 
-    const [name, setName]:any = useState("");
-    const [description, setDescription]:any = useState("");
-    const [productType, setProductType]:any = useState("");
-    const [price, setPrice]:any = useState(1);
-    const [photo, setPhoto]:any = useState('');
-    const [images, setImages]:any = useState([]);
-    const [quantity, setQuantity]:any = useState()
+    const [name, setName]: any = useState("");
+    const [description, setDescription]: any = useState("");
+    const [productType, setProductType]: any = useState("");
+    const [price, setPrice]: any = useState(1);
+    const [photo, setPhoto]: any = useState('');
+    const [images, setImages]: any = useState([]);
+    const [quantity, setQuantity]: any = useState()
     const handleSubmit = async () => {
         const payload = {
             name,
@@ -43,7 +43,7 @@ export default function AddProductForm({ params }:any) {
             productType,
             place: { id: slug },
             price,
-            photo, 
+            photo,
             images,
             quantity
         };
@@ -60,7 +60,7 @@ export default function AddProductForm({ params }:any) {
         }
     };
 
-    const onUploadSuccess = (response:any) => {
+    const onUploadSuccess = (response: any) => {
         setPhoto(response.fileName);
     }
 
@@ -129,6 +129,7 @@ export default function AddProductForm({ params }:any) {
                                 variant="contained"
                                 color="primary"
                                 fullWidth
+                                sx={{ backgroundColor: '#0C4941' }}
                                 onClick={handleSubmit}
                             >
                                 Submit

@@ -8,6 +8,7 @@ import { Box } from "@mui/material";
 import { UserProvider } from "@/contexts/UserContext";
 import { MapProvider } from "@/contexts/MapContext";
 import { LocationProvider } from "@/contexts/LocationContext";
+import { CookiesProvider } from 'next-client-cookies/server';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,19 +36,21 @@ export default function RootLayout({
         style={{ backgroundColor: 'white' }}
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <UserProvider>
-          <CartProvider>
-            <TransparentResponsiveHeader />
-            <MapProvider>
-              <LocationProvider>
-                <Box paddingTop={8}>
-                  {children}
-                </Box>
-              </LocationProvider>
-            </MapProvider>
-            <YourCartButton />
-          </CartProvider>
-        </UserProvider>
+        <CookiesProvider>
+          <UserProvider>
+            <CartProvider>
+              <TransparentResponsiveHeader />
+              <MapProvider>
+                <LocationProvider>
+                  <Box paddingTop={8}>
+                    {children}
+                  </Box>
+                </LocationProvider>
+              </MapProvider>
+              <YourCartButton />
+            </CartProvider>
+          </UserProvider>
+        </CookiesProvider>
       </body>
     </html>
   );

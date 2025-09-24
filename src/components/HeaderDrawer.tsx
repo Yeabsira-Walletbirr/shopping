@@ -26,9 +26,6 @@ import { messaging, initializeMessaging } from '@/utils/firebase';
 import { getToken, onMessage } from "firebase/messaging";
 import API from '@/api'
 
-
-// const navItems = ['Home', 'Shop', 'Contact'];
-
 const TransparentResponsiveHeader = () => {
     const pathname = usePathname()
     const user = useUser()
@@ -114,8 +111,8 @@ const TransparentResponsiveHeader = () => {
 
             try {
                 setSearchLoading(true);
-                const data  = await api.get(`/place/findByName?name=${searchQuery}`);
-                setSearchResults(data || []); 
+                const data = await api.get(`/place/findByName?name=${searchQuery}`);
+                setSearchResults(data || []);
             } catch (err) {
                 console.error("Search failed:", err);
                 setSearchResults([]);
@@ -128,7 +125,6 @@ const TransparentResponsiveHeader = () => {
 
         return () => clearTimeout(handler);
     }, [searchQuery]);
-
 
     return (
         pathname != '/auth' && <>
@@ -149,7 +145,7 @@ const TransparentResponsiveHeader = () => {
                 <Toolbar sx={{ justifyContent: 'space-between', color: 'black' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
                         <Typography onClick={() => router.push('/')} variant="h6" fontWeight="bold" sx={{ whiteSpace: 'nowrap' }}>
-                            <Box component="span" sx={{ color: "#ff6c00" }}>VIA</Box>
+                            <Box component="span" sx={{ color: "#0C4941" }}>VIA</Box>
                             <Box component="span" sx={{ color: "#000000" }}>mart</Box>
                         </Typography>
 
@@ -248,7 +244,7 @@ const TransparentResponsiveHeader = () => {
                 <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer}>
                     <Box sx={{ placeItems: 'center', height: '10vh', alignContent: 'center', backgroundColor: '#dbdbdb' }}>
                         <Typography variant="h6" fontWeight="bold" sx={{ whiteSpace: 'nowrap' }}>
-                            <Box component="span" sx={{ color: "#ff6c00" }}>VIA</Box>
+                            <Box component="span" sx={{ color: "#0C4941" }}>VIA</Box>
                             <Box component="span" sx={{ color: "#000000" }}>mart</Box>
                         </Typography>
                     </Box>

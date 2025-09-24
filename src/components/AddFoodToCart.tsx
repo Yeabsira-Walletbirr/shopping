@@ -23,7 +23,7 @@ type AddFoodToCartCardProps = {
     price: number;
     oldPrice: string;
     place: any;
-    photoDataUrl:any
+    photoDataUrl: any
 };
 
 const AddFoodToCartCard = ({
@@ -89,14 +89,14 @@ const AddFoodToCartCard = ({
                     </Stack>
                 </Stack>
                 <Typography fontWeight="bold" fontSize={13} mb={1}>
-                    <Star sx={{ color: 'orange' }} /> ({rate})
+                    <Star sx={{ color: '#0C4941' }} /> ({rate})
                 </Typography>
                 <Stack direction="row" spacing={1} alignItems="center">
                     <Button
                         size="small"
                         variant="contained"
                         startIcon={<AddShoppingCart />}
-                        sx={{ fontSize: 12, textTransform: 'none', borderRadius: 2 }}
+                        sx={{ fontSize: 12, textTransform: 'none', borderRadius: 2, backgroundColor: '#0C4941' }}
                         onClick={() => addToCart({
                             id, quantity: 1, placeId: place.id,
                             price: price

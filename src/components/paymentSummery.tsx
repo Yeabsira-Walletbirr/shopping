@@ -33,12 +33,12 @@ import { TransitionProps } from '@mui/material/transitions';
 import { useRouter } from 'next/navigation';
 
 const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>,
+    props: TransitionProps & {
+        children: React.ReactElement<any, any>;
+    },
+    ref: React.Ref<unknown>,
 ) {
-  return <Slide direction="up" ref={ref} {...props} />;
+    return <Slide direction="up" ref={ref} {...props} />;
 });
 
 interface Props {
@@ -127,7 +127,7 @@ const PriceSummary = ({ id, quantity, deliveryFee = 35, otherFees = 0, placeId }
             console.error('Order failed', err);
         }
     };
-    const handleClose=()=>{
+    const handleClose = () => {
         router.push('/')
     }
 
@@ -198,7 +198,7 @@ const PriceSummary = ({ id, quantity, deliveryFee = 35, otherFees = 0, placeId }
                     variant="contained"
                     fullWidth
                     size="large"
-                    sx={{ borderRadius: 3, backgroundColor: 'orange', mt: 2 }}
+                    sx={{ borderRadius: 3, backgroundColor: '#0C4941', mt: 2 }}
                     disabled={!location}
                 >
                     Order

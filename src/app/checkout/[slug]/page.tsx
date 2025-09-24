@@ -42,7 +42,7 @@ const Transition = React.forwardRef(function Transition(
 const Checkout = ({ params }: any) => {
     const user = useUser()
     const { slug }: any = React.use(params);
-    const { cartItemsByPlace, getTotalPrice,deleteFromCart } = useCart();
+    const { cartItemsByPlace, getTotalPrice, deleteFromCart } = useCart();
     const [products, setProducts] = useState<any[]>([]);
     const [total, setTotal] = useState(0);
     const [location, setLocation] = useState<{ address: string; lat: number; lng: number } | null>(null);
@@ -115,7 +115,7 @@ const Checkout = ({ params }: any) => {
         }
     }, [locationMode]);
 
-    const handleConfirmOrder = async() => {
+    const handleConfirmOrder = async () => {
         try {
             const orders = products.map(x => {
                 return {
@@ -149,7 +149,7 @@ const Checkout = ({ params }: any) => {
         <ProtectedRoute>
             <Box sx={{ p: 2 }}>
                 <Typography variant="h5" fontWeight="bold" mb={2}>
-                    <ArrowBack sx={{ fontSize: 40, color: '#ffa600', p: 1 }} onClick={() => router.back()} />
+                    <ArrowBack sx={{ fontSize: 40, color: '#0C4941', p: 1 }} onClick={() => router.back()} />
                     Checkout Summary
                 </Typography>
 
@@ -172,7 +172,7 @@ const Checkout = ({ params }: any) => {
                                 <Typography fontSize={14}>Price: {x?.price} ETB</Typography>
                                 <Typography fontSize={14}>Qty: {x?.quantity}</Typography>
                             </Box>
-                            <Typography fontWeight="bold" color="orange">
+                            <Typography fontWeight="bold" color="#0C4941">
                                 {x?.price * x?.quantity} ETB
                             </Typography>
                         </Card>
@@ -227,10 +227,10 @@ const Checkout = ({ params }: any) => {
                         )}
 
                         <Button
+                            sx={{ backgroundColor: '#0C4941', mt: 2, borderRadius: 2, py: 1 }}
                             onClick={handleConfirmOrder}
                             variant="contained"
                             color="warning"
-                            sx={{ mt: 2, borderRadius: 2, py: 1 }}
                             fullWidth
                             disabled={!location}
                         >

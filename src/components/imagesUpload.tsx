@@ -126,11 +126,11 @@ const MultiImageUpload: React.FC<Props> = ({ label = 'Upload Images', maxImages 
             </Typography>
 
             <Button
+                sx={{ backgroundColor: '#0C4941', mb: 2 }}
                 variant="contained"
                 component="label"
                 startIcon={<CloudUploadIcon />}
                 disabled={images.length >= maxImages}
-                sx={{ mb: 2 }}
             >
                 {label}
                 <input

@@ -9,21 +9,21 @@ import { GoogleMap, Marker } from "@react-google-maps/api";
 import { useUser } from "@/contexts/UserContext";
 import ProtectedRoute from "@/utils/protector";
 
-function EditPlace({ params }:any) {
+function EditPlace({ params }: any) {
     const api = API();
     const router = useRouter();
 
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
-    const [placeType, setPlaceType]:any = useState([]);
-    const [productTypes, setProductTypes]:any = useState([]);
+    const [placeType, setPlaceType]: any = useState([]);
+    const [productTypes, setProductTypes]: any = useState([]);
     const [photo, setPhoto] = useState('');
     const [description, setDescription] = useState('');
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
     const user = useUser()
 
-    const uploadSuccess = (response:any) => {
+    const uploadSuccess = (response: any) => {
         setPhoto(response?.fileName);
     };
 
@@ -65,7 +65,7 @@ function EditPlace({ params }:any) {
         ? { lat: latitude, lng: longitude }
         : { lat: 8.991671, lng: 38.7804249 };
 
-    const handleMapClick = (e:any) => {
+    const handleMapClick = (e: any) => {
         const lat = e.latLng.lat();
         const lng = e.latLng.lng();
         setLatitude(lat);
@@ -166,7 +166,7 @@ function EditPlace({ params }:any) {
                 </TextField>
                 <FileUpload label={'Upload Brand Logo'} onUploadSuccess={uploadSuccess} />
 
-                <Button variant="contained" fullWidth onClick={handleUpdate}>
+                <Button sx={{ backgroundColor: '#0C4941' }} variant="contained" fullWidth onClick={handleUpdate}>
                     Save
                 </Button>
             </Stack>
