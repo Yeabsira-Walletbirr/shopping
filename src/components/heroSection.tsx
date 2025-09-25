@@ -16,6 +16,7 @@ import Product from './Product';
 import API from '@/api'
 
 import { useLocation } from '@/contexts/LocationContext'; // update path as needed
+import { useUser } from '@/contexts/UserContext';
 
 
 const categories = [
@@ -30,6 +31,7 @@ const categories = [
 ];
 
 export default function HeroSection() {
+    const user = useUser()
     const [loading, setLoading] = useState(true)
     const [loading2, setLoading2] = useState(true)
     const [loading3, setLoading3] = useState(true)
@@ -37,7 +39,7 @@ export default function HeroSection() {
     const scrollRef = useRef<HTMLDivElement>(null);
     const scrollRef1 = useRef<HTMLDivElement>(null);
     const scrollRef2 = useRef<HTMLDivElement>(null);
-     const { latitude, setLatitude, longitude, setLongitude } = useLocation();
+    const { latitude, setLatitude, longitude, setLongitude } = useLocation();
 
 
     const api = API();
@@ -51,10 +53,6 @@ export default function HeroSection() {
     const [totalTrendingPages, setTotalTrendingPages]: any = useState(1);
 
     const [type, setType]: any = useState('FOOD');
-
-
-    const data = homeData;
-
     const getPhoto = async (res: any) => {
         return await Promise.all(
             res?.content?.map(async (p: any) => {
@@ -85,7 +83,7 @@ export default function HeroSection() {
                 size: 10,
                 productType: type,
                 latitude: latitude,
-                longitude:longitude
+                longitude: longitude
             });
             const newProducts = await getPhoto(res);
             setProducts((prev: any) =>
@@ -109,7 +107,7 @@ export default function HeroSection() {
                 size: 10,
                 productType: type,
                 latitude: latitude,
-                longitude:longitude
+                longitude: longitude
             });
             const newTrending = await getPhoto(res2);
             setTrendingProducts((prev: any) =>
@@ -138,7 +136,7 @@ export default function HeroSection() {
                 size: 10,
                 productType: type,
                 latitude: latitude,
-                longitude:longitude
+                longitude: longitude
             });
 
             const placesWithPhotos = await Promise.all(
@@ -189,7 +187,15 @@ export default function HeroSection() {
         }
     };
 
+    const checkAuth = () => {
+        if (localStorage.getItem('user') != null) {
+            const u = JSON.parse(localStorage.getItem('user') || '{}');
+            user.setAuth(u);
+        }
+    }
+
     useEffect(() => {
+        checkAuth();
         fetchProducts();
         fetchTrending();
         fetchPlaces()

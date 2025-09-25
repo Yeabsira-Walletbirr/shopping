@@ -22,6 +22,7 @@ interface UserContextType {
   login: (userData: User) => void;
   logout: () => void;
   updateProfile: (updatedData: User) => void;
+  setAuth: (u: User) => void
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -71,15 +72,16 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = async (userData: User) => {
-    console.log(userData)
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', userData.token);
 
     cookies.set("user", JSON.stringify(userData));
     cookies.set("token", userData.token);
 
   };
+
+  const setAuth = (u: User) => {
+    setUser(u)
+  }
 
   const logout = async () => {
     setUser(null);
@@ -114,6 +116,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         login,
         logout,
         updateProfile,
+        setAuth
       }}
     >
       {children}
