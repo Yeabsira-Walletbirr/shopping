@@ -72,7 +72,9 @@ const PlaceCard = ({ params }: any) => {
             const payload = {
                 id: slug,
                 page: pageNumber,
-                pageSize: 10
+                size: 10,
+                sortBy: 'id',
+                ascending: false
             }
             const res = await api.get(`/product/getAllProductByPlace`, {
                 ...payload
@@ -116,12 +118,7 @@ const PlaceCard = ({ params }: any) => {
 
     const fetchPlace = async () => {
         try {
-            const data = await api.post(`/place/${slug}`, {
-                latitude: latitude,
-                longitude: longitude,
-                address: ''
-
-            });
+            const data = await api.get(`/place/${slug}`);
             setYourRate(data?.yourRating || 0)
             setRate(data?.rating || 0)
             if (data?.photo) {

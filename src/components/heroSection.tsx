@@ -16,7 +16,6 @@ import Product from './Product';
 import API from '@/api'
 
 import { useLocation } from '@/contexts/LocationContext'; // update path as needed
-import { useUser } from '@/contexts/UserContext';
 
 
 const categories = [
@@ -31,7 +30,6 @@ const categories = [
 ];
 
 export default function HeroSection() {
-    const user = useUser()
     const [loading, setLoading] = useState(true)
     const [loading2, setLoading2] = useState(true)
     const [loading3, setLoading3] = useState(true)
@@ -53,6 +51,10 @@ export default function HeroSection() {
     const [totalTrendingPages, setTotalTrendingPages]: any = useState(1);
 
     const [type, setType]: any = useState('FOOD');
+
+
+    const data = homeData;
+
     const getPhoto = async (res: any) => {
         return await Promise.all(
             res?.content?.map(async (p: any) => {
@@ -187,15 +189,7 @@ export default function HeroSection() {
         }
     };
 
-    const checkAuth = () => {
-        if (localStorage.getItem('user') != null) {
-            const u = JSON.parse(localStorage.getItem('user') || '{}');
-            user.setAuth(u);
-        }
-    }
-
     useEffect(() => {
-        checkAuth();
         fetchProducts();
         fetchTrending();
         fetchPlaces()

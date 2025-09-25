@@ -198,7 +198,7 @@ const PriceSummary = ({ id, quantity, deliveryFee = 35, otherFees = 0, placeId }
                     variant="contained"
                     fullWidth
                     size="large"
-                    sx={{ borderRadius: 3, backgroundColor: '#0C4941', mt: 2 }}
+                    sx={{ borderRadius: 3, backgroundColor: 'orange', mt: 2 }}
                     disabled={!location}
                 >
                     Order

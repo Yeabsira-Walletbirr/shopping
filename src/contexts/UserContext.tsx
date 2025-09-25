@@ -5,7 +5,7 @@ import { messaging, initializeMessaging } from '@/utils/firebase';
 
 import { getToken, onMessage } from "firebase/messaging";
 import API from '@/api';
-import { useCookies } from 'next-client-cookies';
+
 interface User {
   id: number;
   fullName: string;
@@ -22,7 +22,6 @@ interface UserContextType {
   login: (userData: User) => void;
   logout: () => void;
   updateProfile: (updatedData: User) => void;
-  setAuth: (u: User) => void
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -32,7 +31,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter()
 
-  const cookies = useCookies();
   const requestPermission = async () => {
     try {
       const storedUser = localStorage.getItem('user');
@@ -71,26 +69,15 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     requestPermission()
   }, []);
 
-  const login = async (userData: User) => {
+  const login = (userData: User) => {
+    console.log(userData)
     setUser(userData);
-
-    cookies.set("user", JSON.stringify(userData));
-    cookies.set("token", userData.token);
-
+    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', userData.token);
   };
 
-  const setAuth = (u: User) => {
-    setUser(u)
-  }
-
-  const logout = async () => {
+  const logout = () => {
     setUser(null);
-    try {
-      cookies.remove("user");
-      cookies.remove("token");
-    } catch (error) {
-      console.log(`Error deleting cookie1: ${error}`);
-    }
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     router.push('/')
@@ -116,7 +103,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         login,
         logout,
         updateProfile,
-        setAuth
       }}
     >
       {children}
