@@ -59,12 +59,12 @@ const Place = (placeItem: PlaceItem) => {
                     </Stack> */}
                 </Stack>
 
-                {placeItem?.rating != 0 && <Typography fontWeight="bold" fontSize={13}>
+                {placeItem?.rating != 0 &&
                     <Stack direction="row" spacing={0.5} alignItems="center">
                         <Star sx={{ fontSize: 14, color: '#0C4941' }} />
                         <Typography fontSize={11}>{placeItem?.rating}</Typography>
                     </Stack>
-                </Typography>}
+                }
             </Box>
         </Card>
     )

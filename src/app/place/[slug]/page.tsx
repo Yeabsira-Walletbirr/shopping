@@ -371,7 +371,7 @@ const PlaceCard = ({ params }: any) => {
 
                 </Box>
             </Box>
-            <RadioGroup
+            {/* <RadioGroup
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 sx={{
@@ -414,7 +414,7 @@ const PlaceCard = ({ params }: any) => {
                         sx={{ marginRight: 2 }}
                     />
                 ))}
-            </RadioGroup>
+            </RadioGroup> */}
 
             {products?.length > 0 ? <Box
                 ref={scrollRef}
