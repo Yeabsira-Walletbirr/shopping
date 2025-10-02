@@ -21,27 +21,6 @@ const Order = () => {
 
     const scrollRef = useRef<HTMLDivElement>(null)
 
-    const getPhoto = async (res: any) => {
-        return await Promise.all(
-            res?.content?.map(async (p: any) => {
-                if (p?.product?.photo) {
-                    try {
-                        const blob = await api.get(`/files/view/${p?.product?.photo}`, null, {
-                            responseType: 'blob',
-                        })
-                        const imageObjectURL = URL.createObjectURL(blob)
-                        const product = { ...p.product, photoDataUrl: imageObjectURL }
-                        return { ...p, product }
-                    } catch (err) {
-                        console.error('Photo load error:', err)
-                        return { ...p }
-                    }
-                }
-                return { ...p }
-            })
-        )
-    }
-
     const fetchOrders = async (pageNumber = 0, append = false) => {
         if (loading || pageNumber >= totalPages) return
         setLoading(true)
@@ -53,13 +32,7 @@ const Order = () => {
                 sortBy: 'date',
                 ascending: false,
             })
-
-            const ordersWithPhotos = await getPhoto(res)
-            if (append) {
-                setOrders((prev) => [...prev, ...ordersWithPhotos])
-            } else {
-                setOrders(ordersWithPhotos)
-            }
+            setOrders(res?.content)
             setTotalPages(res.totalPages || 1)
             setPage(res.number || 0)
         } catch (err) {
@@ -116,12 +89,12 @@ const Order = () => {
                                             <Typography fontWeight={'700'} >Name:</Typography>
                                             <Typography >{x?.product?.title}</Typography>
                                         </Stack>
-                                        
+
                                         <Stack direction={'row'}>
                                             <Typography fontWeight={'700'} >Place:</Typography>
                                             <Typography >{x?.product?.place?.name}</Typography>
                                         </Stack>
-                                        
+
                                         <Stack direction={'row'}>
                                             <Typography fontWeight={'700'} >Type:</Typography>
                                             <Typography >{x?.product?.type}</Typography>

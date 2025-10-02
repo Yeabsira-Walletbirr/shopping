@@ -12,6 +12,8 @@ import 'keen-slider/keen-slider.min.css';
 import { Close, Comment, Star, ThumbUp, Visibility } from '@mui/icons-material';
 import { AddShoppingCart, RemoveShoppingCart } from '@mui/icons-material';
 import { useCart } from '@/contexts/CartContext';
+import ProductModal from './ProductModal';
+import { useState } from 'react';
 
 type AddFoodToCartCardProps = {
     id: number;
@@ -45,6 +47,14 @@ const AddFoodToCartCard = ({
         getItemCount,
     } = useCart();
 
+    const [open, setOpen] = useState(false);
+
+    const [showContent, setShowContent] = useState(false);
+    const handleOpen = () => {
+        setOpen(true);
+        setTimeout(() => setShowContent(true), 100); // slight delay for smoother entry
+    };
+
     return (
         <Card
             sx={{
@@ -59,7 +69,6 @@ const AddFoodToCartCard = ({
         >
             <CardMedia
                 image={photoDataUrl}
-
                 sx={{
                     width: 300,
                     height: 145,
@@ -73,7 +82,8 @@ const AddFoodToCartCard = ({
             />
             <Box sx={{ width: '100%', p: 2, display: 'flex', flexDirection: 'column' }}>
                 <Box sx={{ justifyContent: 'space-between', display: 'flex' }} mb={1}>
-                    <Typography fontWeight="bold">{title}</Typography>
+                    <Typography
+                        onClick={handleOpen} fontWeight="bold" sx={{ cursor: 'pointer' }}>{title}</Typography>
                     <Typography fontWeight="bold" fontSize={13}>
                         {price} ETB
                     </Typography>
@@ -125,6 +135,9 @@ const AddFoodToCartCard = ({
             >
                 <Close />
             </IconButton>
+
+            <ProductModal id={id} title={title} view={view} comment={comment} image={image} rate={rate} price={price} oldPrice={oldPrice} place={place} photoDataUrl={photoDataUrl} open={open} setOpen={setOpen} showContent={showContent} setShowContent={setShowContent} />
+
         </Card>
     );
 };

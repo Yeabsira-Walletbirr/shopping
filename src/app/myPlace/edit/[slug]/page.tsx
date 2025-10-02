@@ -94,7 +94,6 @@ function EditPlace({ params }: any) {
         { label: "ELECTRONICS", value: "ELECTRONICS" },
         { label: "GROCERY", value: "GROCERY" },
         { label: "FASHION", value: "FASHION" },
-        { label: "FOOD", value: "FOOD" },
         { label: "HOUSE", value: "HOUSE" },
         { label: "OTHER", value: "OTHER" },
     ];

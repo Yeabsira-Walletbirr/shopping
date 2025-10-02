@@ -3,8 +3,11 @@ import React, { useState, useEffect } from 'react';
 import {
     AppBar,
     Box,
+    Button,
+    CircularProgress,
     CssBaseline,
     Drawer,
+    Grid,
     IconButton,
     InputBase,
     List,
@@ -25,6 +28,7 @@ import { useUser } from '@/contexts/UserContext';
 import { messaging, initializeMessaging } from '@/utils/firebase';
 import { getToken, onMessage } from "firebase/messaging";
 import API from '@/api'
+import Product from './Product';
 
 const TransparentResponsiveHeader = () => {
     const pathname = usePathname()
@@ -37,9 +41,15 @@ const TransparentResponsiveHeader = () => {
     const [hideHeader, setHideHeader] = useState(false);
 
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
+    const [searchResults, setSearchResults]: any = useState([]);
     const [searchLoading, setSearchLoading] = useState(false);
     const api = API()
+
+
+    const [page, setPage] = useState(0);
+    const [size, setPageSize] = useState(10);
+    const [sortBy, setSortBy] = useState('id');
+    const [ascending, setAscending] = useState(true);
 
 
 
@@ -102,17 +112,49 @@ const TransparentResponsiveHeader = () => {
 
     const router = useRouter()
 
-    useEffect(() => {
+    const getPhoto = async (res: any) => {
+        return await Promise.all(
+            res?.content?.map(async (p: any) => {
+                if (p.photo) {
+                    try {
+                        const res = await api.get(`/files/view/${p.photo}`, null, {
+                            responseType: 'blob',
+                        });
+                        const imageObjectURL = URL.createObjectURL(res);
+                        return { ...p, photoDataUrl: imageObjectURL };
+                    } catch (err) {
+                        console.error('Photo load error:', err);
+                        return { ...p, photoDataUrl: null };
+                    }
+                    finally {
+                    }
+                }
+                return { ...p, photoDataUrl: null };
+            })
+        );
+    };
+    const search = () => {
         const fetchResults = async () => {
-            if (searchQuery.length < 3) {
-                setSearchResults([]);
-                return;
-            }
 
             try {
                 setSearchLoading(true);
-                const data = await api.get(`/place/findByName?name=${searchQuery}`);
-                setSearchResults(data || []);
+                const data = await api.get(`/product/findByName?name=${searchQuery}`, {
+                    page,
+                    size,
+                    sortBy,
+                    ascending
+                });
+                console.log(data)
+
+                const newProducts = await getPhoto(data);
+                setSearchResults((prev: any) =>
+                    page != 0 ? [...prev, ...newProducts] : newProducts
+                );
+                // setTotalPages(res.totalPages || 1);
+                setPage(data.number || 0);
+
+
+                // setSearchResults(data?.content || []);
             } catch (err) {
                 console.error("Search failed:", err);
                 setSearchResults([]);
@@ -124,7 +166,7 @@ const TransparentResponsiveHeader = () => {
         const handler = setTimeout(fetchResults, 400);
 
         return () => clearTimeout(handler);
-    }, [searchQuery]);
+    };
 
     return (
         pathname != '/auth' && <>
@@ -171,8 +213,13 @@ const TransparentResponsiveHeader = () => {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 inputProps={{ 'aria-label': 'search' }}
                             />
+                            {searchQuery != '' && <Button
+                                variant="contained"
+                                endIcon={<SearchIcon />}
+                                onClick={search}
+                            />}
                         </Paper>
-                        {searchQuery.length >= 3 && (
+                        {searchQuery.length > 0 && (
                             <Box
                                 sx={{
                                     position: 'absolute',
@@ -184,34 +231,18 @@ const TransparentResponsiveHeader = () => {
                                     boxShadow: 3,
                                     borderRadius: 1,
                                     mt: 1,
-                                    maxHeight: 300,
+                                    height: '100vh',
                                     overflowY: 'auto',
                                 }}
                             >
-                                {searchLoading ? (
-                                    <Typography sx={{ p: 2 }}>Searching...</Typography>
-                                ) : searchResults.length > 0 ? (
-                                    searchResults.map((item: any) => (
-                                        <Box
-                                            key={item.id}
-                                            sx={{
-                                                p: 2,
-                                                borderBottom: '1px solid #eee',
-                                                cursor: 'pointer',
-                                                '&:hover': { backgroundColor: '#f5f5f5' },
-                                            }}
-                                            onClick={() => {
-                                                router.push(`/place/${item.id}`); // adjust to your route
-                                                setSearchQuery('');
-                                                setSearchResults([]);
-                                            }}
-                                        >
-                                            {item.name}
-                                        </Box>
-                                    ))
-                                ) : (
-                                    <Typography sx={{ p: 2 }}>No results found</Typography>
-                                )}
+                                <Grid container spacing={1}>
+                                    {searchResults?.map((p: any) => (
+                                        <Grid size={6} key={p.id}>
+                                            <Box key={p.id}><Product productItem={p} gridSize={6} /></Box>
+                                        </Grid>
+                                    ))}
+                                    {searchLoading && <CircularProgress />}
+                                </Grid>
                             </Box>
                         )}
 
@@ -223,11 +254,20 @@ const TransparentResponsiveHeader = () => {
                             <MenuIcon />
                         </IconButton>
                     ) : (
-                        <Box sx={{ display: 'flex', gap: 3 }}>
-                            {navItems.map((item) => (
-                                <Typography key={item.name} sx={{ cursor: 'pointer' }}>
-                                    {item.name}
-                                </Typography>
+                        <Box sx={{ display: 'flex', gap: 0, width: '50%' }}>
+                            {navItems.map((text) => (
+                                <ListItem key={text.name}
+                                    onClick={() => {
+                                        if (text.name === 'Logout') {
+                                            user.logout();
+                                        } else if (text.name === 'Login') {
+                                            router.push('/auth');
+                                        } else {
+                                            router.push(text.route);
+                                        }
+                                    }}>
+                                    <ListItemText primary={text.name} />
+                                </ListItem>
                             ))}
                         </Box>
                     )}

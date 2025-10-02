@@ -30,6 +30,7 @@ import { useLocation } from '@/contexts/LocationContext';
 
 import StraightenIcon from '@mui/icons-material/Straighten';
 import { useUser } from '@/contexts/UserContext';
+import ProductModal from '@/components/ProductModal';
 
 const PlaceCard = ({ params }: any) => {
     const { slug }: any = React.use(params)
@@ -40,7 +41,6 @@ const PlaceCard = ({ params }: any) => {
     const [viewerHeight, setViewerHeight] = useState(250);
     const router = useRouter()
 
-    const { latitude, setLatitude, longitude, setLongitude } = useLocation();
     const [yourRate, setYourRate] = useState(0)
     const [rate, setRate] = useState(0)
 
@@ -54,6 +54,8 @@ const PlaceCard = ({ params }: any) => {
     ];
 
 
+
+
     const tabRef = useRef<HTMLDivElement>(null);
     const [tabReachedTop, setTabReachedTop] = useState(false);
 
@@ -63,7 +65,6 @@ const PlaceCard = ({ params }: any) => {
     const [page, setPage] = useState(0)
     const scrollRef = useRef<HTMLDivElement>(null)
     const [loading, setLoading] = useState(false)
-
 
     const fetch = async (pageNumber = 0, append = false) => {
         if (loading || pageNumber >= totalPages) return
@@ -288,14 +289,6 @@ const PlaceCard = ({ params }: any) => {
                             <Typography fontWeight={700} fontSize={16} color="white">
                                 {place?.name}
                             </Typography>
-                            {place?.isOpen ?
-                                <Typography fontWeight={600} fontSize={12} color="#00ff00" display="flex" alignItems="center">
-                                    <CircleIcon sx={{ fontSize: 10, mr: 0.5 }} /> Open now
-                                </Typography>
-                                :
-                                <Typography fontWeight={600} fontSize={12} color="#7d0000e1" display="flex" alignItems="center">
-                                    <CircleIcon sx={{ fontSize: 10, mr: 0.5 }} /> Closed
-                                </Typography>}
                             <Rating
 
                                 value={yourRate}
@@ -324,18 +317,7 @@ const PlaceCard = ({ params }: any) => {
                                 <LocationPin sx={{ fontSize: 16, mr: 1 }} />
                                 {place?.address}
                             </Typography>
-                            <Typography
-                                fontWeight={400}
-                                fontSize={14}
-                                color="white"
-                                display="flex"
-                                alignItems="center"
-                                mb={1}
-                            >
-                                <StraightenIcon sx={{ fontSize: 16, mr: 1 }} />
 
-                                {place?.distance?.toFixed(1) + " km"}
-                            </Typography>
 
                             <Typography
                                 fontWeight={400}
@@ -427,6 +409,7 @@ const PlaceCard = ({ params }: any) => {
                     </Box>
                 ))}
                 {loading && <Typography>Loading...</Typography>}
+
             </Box>
                 :
 

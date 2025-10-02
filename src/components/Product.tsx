@@ -11,7 +11,9 @@ import {
     IconButton,
     Button,
     Rating,
-    Slide
+    Slide,
+    useTheme,
+    useMediaQuery
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -27,14 +29,14 @@ type ProductItem = {
     type: string;
     place: any;
     rate: number,
-    discount:string,
-    description:string,
-    images:[],
-    percent:number,
-    photoDataUrl:any
+    discount: string,
+    description: string,
+    images: [],
+    percent: number,
+    photoDataUrl: any
 };
 
-const Product = (productItem: ProductItem) => {
+const Product = ({ productItem, gridSize }) => {
     const [open, setOpen] = useState(false);
     const [quantity, setQuantity] = useState(1);
 
@@ -43,6 +45,11 @@ const Product = (productItem: ProductItem) => {
     const total = (priceNumber * quantity).toFixed(2);
 
     const [showContent, setShowContent] = useState(false);
+
+
+    const theme = useTheme();
+
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
     const handleOpen = () => {
         setOpen(true);
@@ -57,7 +64,7 @@ const Product = (productItem: ProductItem) => {
     return (
         <>
             <Card
-                sx={{ width: 150, borderRadius: 3, boxShadow: 3, margin: 1, cursor: 'pointer',p:0 }}
+                sx={{ width: '100%', borderRadius: 3, boxShadow: 3, cursor: 'pointer', p: 0 }}
                 onClick={handleOpen}
             >
                 <Box sx={{ position: 'relative' }}>
@@ -65,7 +72,7 @@ const Product = (productItem: ProductItem) => {
                         component="img"
                         image={productItem.photoDataUrl}
                         alt={productItem.title}
-                        sx={{ borderTopLeftRadius: 12, borderTopRightRadius: 12, height: 100 }}
+                        sx={{ borderTopLeftRadius: 12, borderTopRightRadius: 12, height: isMobile ? (gridSize == 4 ? 100 : gridSize == 6 ? 200 : 450) : '40vh' }}
                     />
                     {productItem.discount && <Chip
                         label={`${productItem.percent?.toFixed(1)}%`}
@@ -80,12 +87,12 @@ const Product = (productItem: ProductItem) => {
                         }}
                     />}
                 </Box>
-                <CardContent sx={{ p: 1, paddingBottom:'8px !important' }}>
+                <CardContent sx={{ p: 1, paddingBottom: '8px !important' }}>
                     <Typography sx={{ fontSize: 14 }} component="div" fontWeight={600}>
                         {productItem.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        {productItem.place?.name}
+                        {productItem.description}
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Typography sx={{ fontSize: 12 }} fontWeight="bold" color="text.primary">

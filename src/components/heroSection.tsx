@@ -7,8 +7,13 @@ import {
     Tab,
     Divider,
     CircularProgress,
+    Grid,
+    Paper,
+    TextField,
+    MenuItem,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
-import { homeData } from '@/data/home'
 import { useEffect, useRef, useState } from 'react';
 import TrendingProduct from './TrendingProduct';
 import Place from './Place';
@@ -19,7 +24,7 @@ import { useLocation } from '@/contexts/LocationContext'; // update path as need
 
 
 const categories = [
-    { name: 'Food', value: "FOOD" },
+    { name: 'All', value: null },
     { name: 'Grocery', value: 'GROCERY' },
     { name: 'Fashion', value: 'FASHION' },
     { name: 'Electroics', value: 'ELECTRONICS' },
@@ -37,7 +42,8 @@ export default function HeroSection() {
     const scrollRef = useRef<HTMLDivElement>(null);
     const scrollRef1 = useRef<HTMLDivElement>(null);
     const scrollRef2 = useRef<HTMLDivElement>(null);
-    const { latitude, setLatitude, longitude, setLongitude } = useLocation();
+
+    const [gridSize, setGridSize] = useState(4)
 
 
     const api = API();
@@ -50,10 +56,11 @@ export default function HeroSection() {
     const [pageTrending, setPageTrending]: any = useState(0);
     const [totalTrendingPages, setTotalTrendingPages]: any = useState(1);
 
-    const [type, setType]: any = useState('FOOD');
+    const [type, setType]: any = useState(null);
+    const theme = useTheme();
 
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-    const data = homeData;
 
     const getPhoto = async (res: any) => {
         return await Promise.all(
@@ -80,12 +87,10 @@ export default function HeroSection() {
     const fetchProducts = async (pageNumber = 0, append = false) => {
         try {
             setLoading(true)
-            const res = await api.get('/product', {
+            const res = await api.get('/product/getProducts', {
                 page: pageNumber,
                 size: 10,
                 productType: type,
-                latitude: latitude,
-                longitude: longitude
             });
             const newProducts = await getPhoto(res);
             setProducts((prev: any) =>
@@ -93,23 +98,23 @@ export default function HeroSection() {
             );
             setTotalPages(res.totalPages || 1);
             setPage(res.number || 0);
+
         } catch (err) {
             console.error("Failed to load products");
         }
         finally {
             setLoading(false)
+
         }
     };
 
     const fetchTrending = async (pageNumber = 0, append = false) => {
         try {
             setLoading2(true)
-            const res2 = await api.get(`/product/trending`, {
+            const res2 = await api.get(`/product/getTrending`, {
                 page: pageNumber,
                 size: 10,
                 productType: type,
-                latitude: latitude,
-                longitude: longitude
             });
             const newTrending = await getPhoto(res2);
             setTrendingProducts((prev: any) =>
@@ -125,53 +130,6 @@ export default function HeroSection() {
         }
     };
 
-
-    const [places, setPlaces]: any = useState([]);
-    const [pagePlaces, setPagePlaces]: any = useState(0);
-    const [totalPlacesPages, setTotalPlacesPages]: any = useState(1);
-
-    const fetchPlaces = async (pageNumber = 0, append = false) => {
-        try {
-            setLoading3(true)
-            const data = await api.get(`/place/getNearByPlaces`, {
-                page: pageNumber,
-                size: 10,
-                productType: type,
-                latitude: latitude,
-                longitude: longitude
-            });
-
-            const placesWithPhotos = await Promise.all(
-                data?.content?.map(async (place: any) => {
-                    if (place.photo) {
-                        try {
-                            const res = await api.get(`/files/view/${place.photo}`, null, {
-                                responseType: 'blob',
-                            });
-                            const imageObjectURL = URL.createObjectURL(res);
-
-
-                            return { ...place, photoDataUrl: imageObjectURL };
-                        } catch (err) {
-                            console.error('Photo load error:', err);
-                            return { ...place, photoDataUrl: null };
-                        }
-                    }
-                    return { ...place, photoDataUrl: null };
-                })
-            );
-
-            setPlaces((prev: any) =>
-                append ? [...prev, ...placesWithPhotos] : placesWithPhotos
-            );
-            setTotalPlacesPages(data.totalPages || 1);
-            setPagePlaces(data.number || 0);
-        } catch (e) {
-            console.error('Error fetching places:', e);
-        } finally {
-            setLoading3(false)
-        }
-    };
 
     const handleScroll = async () => {
         if (!scrollRef.current) return;
@@ -190,10 +148,14 @@ export default function HeroSection() {
     };
 
     useEffect(() => {
+        if (localStorage.getItem('gridSize')) {
+            setGridSize(parseInt(localStorage.getItem('gridSize')))
+
+        }
         fetchProducts();
         fetchTrending();
-        fetchPlaces()
-    }, [type, latitude]);
+
+    }, [type]);
 
     return (
 
@@ -209,45 +171,52 @@ export default function HeroSection() {
                     borderColor: 'divider',
                 }}
             >
-                <Tabs
-                    value={tabIndex}
-                    onChange={(_, newVal) => {
-                        scrollRef.current?.scrollTo({ left: 0, behavior: 'smooth' });
-                        scrollRef1.current?.scrollTo({ left: 0, behavior: 'smooth' });
-                        scrollRef2.current?.scrollTo({ left: 0, behavior: 'smooth' });
-                        setTabIndex(newVal);
-                        setType(categories[newVal]?.value);
-                    }}
-                    variant="scrollable"
-                    scrollButtons="auto"
-                >
-                    {categories.map((cat) => (
-                        <Tab disabled={loading || loading2 || loading3} key={cat.value} label={cat.name} sx={{ textTransform: 'none' }} />
-                    ))}
-                </Tabs>
+                <Box sx={{ display: 'flex' }}>
+                    <Tabs
+                        value={tabIndex}
+                        onChange={(_, newVal) => {
+                            scrollRef.current?.scrollTo({ left: 0, behavior: 'smooth' });
+                            scrollRef1.current?.scrollTo({ left: 0, behavior: 'smooth' });
+                            scrollRef2.current?.scrollTo({ left: 0, behavior: 'smooth' });
+                            setTabIndex(newVal);
+                            setType(categories[newVal]?.value);
+                        }}
+                        variant="scrollable"
+                        scrollButtons="auto"
+                    >
+                        {categories.map((cat) => (
+                            <Tab disabled={loading || loading2} key={cat.value} label={cat.name} sx={{ textTransform: 'none' }} />
+                        ))}
+                    </Tabs>
+                    {isMobile && <TextField
+                        label="Grid Size"
+                        fullWidth
+                        select
+                        value={gridSize}
+                        onChange={(e) => {
+                            setGridSize(e.target.value)
+                            localStorage.setItem('gridSize', e.target.value)
+                        }}
+                    >
+                        {[4, 6, 12].map((size) => (
+                            <MenuItem key={size} value={size}>
+                                {size}
+                            </MenuItem>
+                        ))}
+                    </TextField>}
+                </Box>
+
+
             </Box>
 
 
-            {loading || loading2 || loading3 ? (
+            {loading || loading2 ? (
                 <Box height="82vh" display="flex" alignItems="center" justifyContent="center">
                     <CircularProgress />
                 </Box>
             ) : (
-                (products?.length > 0 || trendingProducts?.length > 0 || places?.length > 0) ?
+                (products?.length > 0 || trendingProducts?.length > 0) ?
                     <>
-                        <Box sx={{ px: 1 }}>
-                            <Box
-                                ref={scrollRef}
-                                sx={{ display: 'flex', overflowX: 'auto', pb: 1, scrollbarWidth: 'none' }}
-                                onScroll={handleScroll}
-                            >
-                                {products?.map((p: any) => (
-                                    <Box key={p.id}><Product {...p} /></Box>
-                                ))}
-                                {loading && <CircularProgress />}
-
-                            </Box>
-                        </Box>
                         {trendingProducts?.length > 0 &&
                             <>
                                 <Divider sx={{ my: 2 }} />
@@ -269,23 +238,25 @@ export default function HeroSection() {
                                 </Box>
                             </>
                         }
+                        {/* <Box sx={{ px: 1 }}> */}
+                        <Box
+                            ref={scrollRef}
+                            sx={{ overflowY: 'auto', p: 1, scrollbarWidth: 'none' }}
+                            onScroll={handleScroll}
+                        >
+                            <Grid container spacing={1}>
+                                {/* Column 1 */}
+                                {products?.map((p: any) => (
+                                    <Grid size={isMobile ? gridSize : 2} key={p.id}>
+                                        <Box key={p.id}><Product productItem={p} gridSize={gridSize} /></Box>
+                                    </Grid>
+                                ))}
 
-                        {places?.length > 0 &&
-                            <>
-                                <Divider sx={{ my: 2 }} />
-                                <Box sx={{ px: 1 }}>
-                                    <Typography variant="h6" fontWeight="bold" gutterBottom>
-                                        Nearby Places
-                                    </Typography>
-                                    {places?.map((p: any) => (
-                                        // console.log(p)
-                                        <Box sx={{ p: 1 }} key={p.id}><Place {...p} /></Box>
-                                    ))}
-                                    {loading3 && <CircularProgress />}
 
-                                </Box>
-                            </>
-                        }
+                                {loading && <CircularProgress />}
+                            </Grid>
+                        </Box>
+                        {/* </Box> */}
 
                     </>
                     :

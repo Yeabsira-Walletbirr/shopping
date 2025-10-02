@@ -11,6 +11,7 @@ import {
     Button,
     Badge,
     IconButton,
+    Paper,
 } from '@mui/material';
 import API from '@/api';
 import { useRouter } from 'next/navigation';
@@ -68,7 +69,17 @@ export default function PlaceList() {
         <ProtectedRoute>
             <Box display="flex" flexDirection="column" sx={{ padding: 2 }} gap={2}>
                 {loading ? (
-                    <CircularProgress />
+                    <Paper
+                        sx={{
+                            height: '90vh',
+                            textAlign: 'center',
+                            alignContent: 'center',
+                            boxShadow: 'none',
+                        }}
+                    >
+                        <CircularProgress />
+
+                    </Paper>
                 ) : (
                     places.map((place: any) => (
                         <Card key={place.id} onClick={() => router.push(`/myPlace/view/${place.id}`)} sx={{ cursor: 'pointer', display: 'flex' }}>

@@ -31,12 +31,12 @@ type ProductItem = {
     image?: string;
     type?: string;
     place?: any;
-    rate?: number;
+    rate?: string;
     discount?: string;
     description?: string;
     images?: string[];
     like?: number;
-    comment?: number;
+    comment?: string;
     photoDataUrl?: string;
     view?: number;
     counter?: number;
@@ -328,7 +328,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                     {!showComment ? (
                         <Box sx={{ p: { xs: 2, sm: 3 }, minHeight: '40vh' }}>
                             <Typography variant="h6" fontWeight="bold">{title}</Typography>
-                            <Typography color="text.secondary" gutterBottom>{place?.name}</Typography>
+                            <Typography style={{ color: '#0080a7ff' }} onClick={() => router.push(`/place/${place.id}`)} color="text.secondary" gutterBottom>Visit {place?.name}</Typography>
 
                             <Rating
                                 value={yourRate}

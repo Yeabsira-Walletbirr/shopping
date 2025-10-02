@@ -22,7 +22,6 @@ const PRODUCT_TYPES = [
     { label: "ELECTRONICS", value: "ELECTRONICS" },
     { label: "GROCERY", value: "GROCERY" },
     { label: "FASHION", value: "FASHION" },
-    { label: "FOOD", value: "FOOD" },
     { label: "HOME", value: "HOME" },
     { label: "OTHER", value: "OTHER" },
 ];
