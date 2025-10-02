@@ -183,7 +183,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         if (yourRating)
             setYourRate(yourRating);
         if (rate)
-            setRating(rate);
+            setRating(parseInt(rate));
         if (photoDataUrl)
             setAllImages([photoDataUrl]);
         if (view)

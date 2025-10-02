@@ -36,7 +36,7 @@ type ProductItem = {
     photoDataUrl: any
 };
 
-const Product = ({ productItem, gridSize }) => {
+const Product = ({ productItem, gridSize }: any) => {
     const [open, setOpen] = useState(false);
     const [quantity, setQuantity] = useState(1);
 

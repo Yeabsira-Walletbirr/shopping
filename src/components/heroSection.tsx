@@ -148,8 +148,10 @@ export default function HeroSection() {
     };
 
     useEffect(() => {
-        if (localStorage.getItem('gridSize')) {
-            setGridSize(parseInt(localStorage.getItem('gridSize')))
+        const size = localStorage.getItem('gridSize')
+
+        if (size != null) {
+            setGridSize(parseInt(size))
 
         }
         fetchProducts();
@@ -194,7 +196,10 @@ export default function HeroSection() {
                         select
                         value={gridSize}
                         onChange={(e) => {
-                            setGridSize(e.target.value)
+                            if (e.target.value != null) {
+
+                                setGridSize(parseInt(e.target.value))
+                            }
                             localStorage.setItem('gridSize', e.target.value)
                         }}
                     >
