@@ -46,6 +46,7 @@ const TransparentResponsiveHeader = () => {
     const api = API()
 
 
+    const [totalPages, setTotalPages] = useState(0)
     const [page, setPage] = useState(0);
     const [size, setPageSize] = useState(10);
     const [sortBy, setSortBy] = useState('id');
@@ -133,6 +134,10 @@ const TransparentResponsiveHeader = () => {
             })
         );
     };
+    useEffect(() => {
+        if (searchQuery.length > 0)
+            search()
+    }, [page])
     const search = () => {
         const fetchResults = async () => {
 
@@ -150,7 +155,7 @@ const TransparentResponsiveHeader = () => {
                 setSearchResults((prev: any) =>
                     page != 0 ? [...prev, ...newProducts] : newProducts
                 );
-                // setTotalPages(res.totalPages || 1);
+                setTotalPages(data.totalPages || 1);
                 setPage(data.number || 0);
 
 
@@ -243,6 +248,10 @@ const TransparentResponsiveHeader = () => {
                                     ))}
                                     {searchLoading && <CircularProgress />}
                                 </Grid>
+                                {(page + 1 != totalPages && searchResults.length > 0) && <Button onClick={() => {
+                                    setPage(page + 1);
+                                }}>More</Button>}
+
                             </Box>
                         )}
 
@@ -256,7 +265,7 @@ const TransparentResponsiveHeader = () => {
                     ) : (
                         <Box sx={{ display: 'flex', gap: 0, width: '50%' }}>
                             {navItems.map((text) => (
-                                <ListItem key={text.name}
+                                <ListItem sx={{ cursor: 'pointer' }} key={text.name}
                                     onClick={() => {
                                         if (text.name === 'Logout') {
                                             user.logout();

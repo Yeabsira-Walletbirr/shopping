@@ -91,7 +91,7 @@ const Product = ({ productItem, gridSize }: any) => {
                     <Typography sx={{ fontSize: 14 }} component="div" fontWeight={600}>
                         {productItem.title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" overflow={'hidden'} textOverflow={'ellipsis'} whiteSpace={'nowrap'}>
                         {productItem.description}
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
