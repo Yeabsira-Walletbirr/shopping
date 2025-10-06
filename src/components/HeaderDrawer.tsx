@@ -193,7 +193,7 @@ const TransparentResponsiveHeader = () => {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
                         <Typography onClick={() => router.push('/')} variant="h6" fontWeight="bold" sx={{ whiteSpace: 'nowrap' }}>
                             <Box component="span" sx={{ color: "#0C4941" }}>VIA</Box>
-                            <Box component="span" sx={{ color: "#000000" }}>mart</Box>
+                            <Box component="span" sx={{ color: "#000000" }}>shopping</Box>
                         </Typography>
 
                         {/* Search bar visible only on md and up */}
@@ -235,18 +235,30 @@ const TransparentResponsiveHeader = () => {
                                     backgroundColor: '#fff',
                                     boxShadow: 3,
                                     borderRadius: 1,
-                                    mt: 1,
                                     height: '100vh',
                                     overflowY: 'auto',
                                 }}
                             >
                                 <Grid container spacing={1}>
                                     {searchResults?.map((p: any) => (
-                                        <Grid size={6} key={p.id}>
-                                            <Box key={p.id}><Product productItem={p} gridSize={6} /></Box>
+                                        <Grid size={isMobile ? 6 : 2} key={p.id}>
+                                            <Box key={p.id}><Product productItem={p} gridSize={isMobile ? 6 : 2} /></Box>
                                         </Grid>
                                     ))}
-                                    {searchLoading && <CircularProgress />}
+                                    {searchLoading &&
+                                        <Paper
+                                            sx={{
+                                                width: '100%',
+                                                height: '90vh',
+                                                textAlign: 'center',
+                                                alignContent: 'center',
+                                                boxShadow: 'none',
+                                            }}
+                                        >
+                                            <CircularProgress />
+
+                                        </Paper>
+                                    }
                                 </Grid>
                                 {(page + 1 != totalPages && searchResults.length > 0) && <Button onClick={() => {
                                     setPage(page + 1);

@@ -203,9 +203,9 @@ export default function HeroSection() {
                             localStorage.setItem('gridSize', e.target.value)
                         }}
                     >
-                        {[4, 6, 12].map((size) => (
-                            <MenuItem key={size} value={size}>
-                                {size}
+                        {[{ key: 3, value: 4 }, { key: 2, value: 6 }, { key: 1, value: 12 }].map((size) => (
+                            <MenuItem key={size.value} value={size.value}>
+                                {size.key}
                             </MenuItem>
                         ))}
                     </TextField>}

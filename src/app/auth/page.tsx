@@ -132,7 +132,7 @@ export default function PhoneAuth() {
             VIA
           </Typography>
           <Typography sx={{ color: 'black' }} variant="h3" fontWeight="bold" gutterBottom textAlign="center">
-            mart
+            Shopping
           </Typography>
         </div>
 

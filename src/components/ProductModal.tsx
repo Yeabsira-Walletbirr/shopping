@@ -254,7 +254,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                     maxWidth: { xs: '100%', sm: '50%' },
                     bgcolor: 'background.paper',
                     position: 'absolute',
-                    bottom: { xs: 0, sm: '10%' },
+                    bottom: 0,
                     left: { sm: '25%' },
                     transform: { sm: 'translate(-50%, -50%)' },
                     borderRadius: { xs: '20px 20px 0 0', sm: 4 },
